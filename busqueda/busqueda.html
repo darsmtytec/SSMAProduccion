@@ -1,0 +1,178 @@
+<style>
+    .search-label {
+        text-transform: none !important;
+        padding: 4px 6px 4px 6px;
+        font-size: 14px;
+        font-weight: 300;
+        color: #ffffff;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: baseline;
+        border-radius: .25em;
+        margin-top:.25em;
+        margin-bottom:.25em;
+        margin-right:.25em;
+    }
+    .search-label a{
+        color: #ffffff;
+    }
+    .search-label.keyterm{
+        background-color: #1caf9a;
+    }
+    .list-inline li{
+        padding: 0px !important;
+    }
+</style>
+<!--==============================
+	Search Section
+	==================================-->
+<div class="section">
+    <div class="row">
+        <!--==============================
+            Config
+            ==================================-->
+        <div class="col-md-6">
+            <div class="portlet light bordered">
+                <div class="portlet-title">
+                    <div class="caption font-red-sunglo">
+                        <i class="icon-settings font-red-sunglo"></i>
+                        <span class="caption-subject bold uppercase"> Configuración de Búsqueda</span>
+                    </div>
+                </div>
+                <div class="portlet-body form">
+                    <form role="form">
+                        <div class="form-body">
+                            <div class="form-group form-md-line-input has-info form-md-floating-label">
+                                <div class="input-group input-group-lg">
+                                    <div class="input-group-control">
+                                        <input id="mainTerms" type="text" class="form-control input-lg" placeholder="">
+                                        <label for="form_control_1">Agrega los términos de búsqueda</label>
+                                    </div>
+									<span class="input-group-btn btn-right">
+									<button class="btn btn-circle blue" type="button"><i class="fa fa-plus"></i></button>
+									</span>
+                                </div>
+                            </div>
+                            <!--SocialIcons--------------------------------------------------->
+                            <div class="portlet-body util-btn-margin-bottom-5">
+                                <a  data-original-title="blogger" class="social-icon blogger">
+                                </a>
+                                <a  data-original-title="facebook" class="social-icon facebook">
+                                </a>
+                                <a  data-original-title="Goole Plus" class="social-icon googleplus">
+                                </a>
+                                <a  data-original-title="pintrest" class="social-icon pintrest">
+                                </a>
+                                <a  data-original-title="tumblr" class="social-icon tumblr">
+                                </a>
+                                <a  data-original-title="twitter" class="social-icon twitter">
+                                </a>
+                                <a  data-original-title="youtube" class="social-icon youtube">
+                                </a>
+                                <a  data-original-title="instagram" class="social-icon instagram">
+                                </a>
+                                <a  data-original-title="reddit" class="social-icon reddit">
+                                </a>
+                                <a  data-original-title="foursquare" class="social-icon foursquare">
+                                </a>
+                            </div>
+                            <!--SocialIcons-->
+                            <br>
+                            <a >Opciones Avanzadas...</a>
+                            <!--ADVANCED------------------------------------------------------->
+                            <p>
+                            </p>
+                            <div class="form-group form-md-checkboxes">
+                                <label>NSFW (Not Safe for Work)</label>
+                                <div class="md-checkbox-inline">
+                                    <div class="md-checkbox">
+                                        <input type="checkbox" id="checkbox7" class="md-check" checked="">
+                                        <label for="checkbox7">
+                                            <span class="inc"></span>
+                                            <span class="check"></span>
+                                            <span class="box"></span>
+                                            18+</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <p></p>
+                            <p>
+                            </p>
+                            <div class="form-group form-md-line-input has-info">
+                                <select class="form-control" id="form_control_1">
+                                    <option value="">Se incluyen todas las palabras...</option>
+                                    <option value="">Se incluyen algunas de las palabras...</option>
+                                    <option value="">No se incluyen las palabras...</option>
+                                </select>
+                                <label for="form_control_1">Opciones de términos</label>
+                            </div>
+                            <p></p>
+                            <p>
+                            </p>
+                            <div class="form-group form-md-line-input form-md-floating-label">
+                                <input type="text" class="form-control" id="form_control_2">
+                                <label for="form_control_1">Término</label>
+                                <span class="help-block">Agrega un nuevo término</span>
+                            </div>
+                            <p></p>
+                            <div class="form-actions noborder">
+                                <a class="btn btn-lg btn-primary">
+                                    Buscar <i class="fa fa-search"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                    <!--PortletBody-->
+                </div>
+                <!--Portlet-->
+            </div>
+        </div>
+        <!--==============================
+            Terms
+            ==================================-->
+        <div class="col-md-6">
+            <div class="portlet light bordered">
+                <div class="portlet-title">
+                    <div class="caption font-red-sunglo">
+                        <i class="icon-fire font-red-sunglo"></i>
+                        <span class="caption-subject bold uppercase"> Términos de Búsqueda</span>
+                    </div>
+                </div>
+                <div class="portlet-body form">
+                    <form role="form">
+                        <div class="form-body">
+                            <ul class="list-inline">
+                                <li>
+                                    <div name="searchterm N" class="search-label keyterm">Termino 1 <a class="fa fa-times"></a></div>
+                                </li>
+                                <li>
+                                    <div name="searchterm N" class="search-label keyterm">Termino 1 <a class="fa fa-times"></a></div>
+                                </li>
+                                <li>
+                                    <div name="searchterm N" class="search-label keyterm">Termino 1 <a class="fa fa-times"></a></div>
+                                </li>
+                                <li>
+                                    <div name="searchterm N" class="search-label keyterm">Termino 1 <a class="fa fa-times"></a></div>
+                                </li>
+                                <li>
+                                    <div name="searchterm N" class="search-label keyterm">Termino 1 <a class="fa fa-times"></a></div>
+                                </li>
+                                <li>
+                                    <div name="searchterm N" class="search-label keyterm">Termino 1 <a class="fa fa-times"></a></div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="form-actions noborder">
+                            <!--Add Buttons-->
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--End Config Row-->
+</div>
+<!--End Search Section-->
+<!--==============================
+	Contents Section
+	==================================-->

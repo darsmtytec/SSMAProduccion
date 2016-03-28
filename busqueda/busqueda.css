@@ -1,0 +1,113 @@
+.search-label {
+    text-transform: none !important;
+    padding: 4px 6px 4px 6px !important;
+    font-size: 14px;
+    font-weight: 300;
+    color: #ffffff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: .25em;
+    margin: 1.5px !important;
+}
+.search-label a{
+    color: #fff;
+}
+.klout {
+     position: relative;
+ }
+.klout:after {
+    left: 100%;
+    top: 50%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+    border-color: rgba(0, 0, 0, 0);
+    border-left-color: #E87E04;
+    border-width: 4px;
+    margin-top: -4px;
+}
+.bg-yellow-positive{
+    background-color: #DAE166;
+}
+.fa-2{
+    font-size:25px;
+}
+#map { height: 100%; }
+.emoji{
+    height:15px !important;
+    width:15px !important;
+    margin:0 !important;
+}
+
+.hidden{
+    visibility: hidden !important;
+}
+.shown{
+    visibility: visible !important;
+}
+
+.left{
+    float: left;
+}
+
+.sentimiento-class{
+    margin-left: 17px !important;
+}
+#tweetLoad{
+    height:500px !important;
+}
+.slimScrollDiv{
+    height:500px !important;
+}
+
+#instaLoad{
+    height:500px !important;
+}
+
+#panel-tweet{
+    display: none;
+}
+
+.loading1{
+    margin-top: -2px;
+}
+
+.videoWrapper {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 */
+    padding-top: 25px;
+    height: 0;
+}
+.videoWrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+
+#panel{
+    display: none;
+}
+
+.comment {
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-left: 1px solid rgba(0, 0, 0, 0.1);
+    font-weight: 600;
+    font-size: 15px;
+    color: #495254;
+    padding: 1em 0.5em;
+}
+
+.replies {
+    background-color: #d5e1e5;
+}
+
+.selected-item{
+    background-color: #d5e1e5 !important;
+}
