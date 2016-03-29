@@ -14,8 +14,8 @@ $response = array("success" => 0, "error" => 0, "msg" => '');
 
 
 $login = "";
-$user = "admin";
-$password = "admin";
+$user = "";
+$password = "";
 
 if (isset($_POST['username']) && $_POST['username'] != '') {
     $user = $_POST['username'];
@@ -29,7 +29,6 @@ $login = $db->getUser($user, $password);
 
 
 if ($login != "") {
-
     if (isset($login["user"])) {
         $response["success"] = 1;
         $response["error"] = 0;
@@ -39,6 +38,8 @@ if ($login != "") {
         $response["perfil"] = $login["perfil"];
 
 
+
+
         session_start();
         $_SESSION["user"] =  $login["user"];
         // Obtener el nombre del user
@@ -46,6 +47,7 @@ if ($login != "") {
         $_SESSION["perfil"] = $login["perfil"];
         // Registrar el primer timestamp
         $_SESSION['LAST_ACTIVITY'] = time();
+
 
 
     } else {

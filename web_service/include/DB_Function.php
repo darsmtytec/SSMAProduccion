@@ -31,13 +31,26 @@ class DB_Function
 
     public function getUser($user, $password)
     {
+        $password = md5($password);
         if ($user == '') {
 
         } else {
-            $result = mysql_query("SELECT user FROM user WHERE user = '$user' AND password = '$password' ") or die(mysql_errno());
-            $result = mysql_fetch_array($result);
+            $us = mysql_query("SELECT user FROM user WHERE user = '$user' ") or die(mysql_errno());
+            if (mysql_num_rows($us) > 0) {
+                $pass = mysql_query(" SELECT password FROM user WHERE  password = '$password' AND  user = '$user'") or die(mysql_errno());
+                if (mysql_num_rows($pass) > 0) {
+                    $query = mysql_query(" SELECT password,user,email,nombre,perfil FROM user WHERE  password = '$password' AND  user = '$user'") or die(mysql_errno());
+                    $query = mysql_fetch_array($query);
+
+                    return $query;
+                } else {
+                    return "wrong password";
+                }
+            } else {
+                return "wrong user";
+            }
+
         }
-        return $result;
 
     }
 
@@ -62,9 +75,9 @@ class DB_Function
     {
 
         $check = mysql_query("SELECT word FROM fav_words WHERE word = '$word' ") or die(mysql_errno());
-        $check =mysql_fetch_array($check);
+        $check = mysql_fetch_array($check);
         //cheacar si la palabra ya existe en la taba, si ya existe la activa, si no cre un nuevo registro en la BD
-        if($check == false) {
+        if ($check == false) {
             $query1 = " INSERT INTO fav_words(";
             $query2 = " VALUES (";
             $bool = false;
@@ -109,23 +122,23 @@ class DB_Function
                 //var_dump($query);
                 $result = mysql_query($query) or die(mysql_error());
                 $result = mysql_query("SELECT id FROM fav_words WHERE word = '$word'") or die(mysql_errno());
-                $result =mysql_fetch_array($result);
+                $result = mysql_fetch_array($result);
 
                 return $result;
             } else {
                 return false;
             }
-        }
-        else{
+        } else {
             $result = mysql_query("UPDATE fav_words SET active=1 WHERE  word = '$word'") or die(mysql_errno());
             $result = mysql_query("SELECT id FROM fav_words WHERE word = '$word'") or die(mysql_errno());
-            $result =mysql_fetch_array($result);
+            $result = mysql_fetch_array($result);
             return $result;
         }
 
     }
 
-    public function updateWords($id, $word, $active, $created_date, $created_by){
+    public function updateWords($id, $word, $active, $created_date, $created_by)
+    {
 
         $strQuery = "UPDATE fav_words SET ";
         $bool = false;
@@ -171,20 +184,20 @@ class DB_Function
     {
         $twitter = false;
         $instagram = false;
-        if(strpos($apis,'t')){
+        if (strpos($apis, 't')) {
             $twitter = 'true';
         }
-        if(strpos($apis,'i')){
+        if (strpos($apis, 'i')) {
             $instagram = 'true';
         }
         $array = array();
-        if($twitter == 'true'){
-            array_push($array,array("api" => 'twitter'));
+        if ($twitter == 'true') {
+            array_push($array, array("api" => 'twitter'));
         }
-        if($instagram == 'true'){
+        if ($instagram == 'true') {
         }
-        if($twitter == 'true' && $instagram == 'true'){
-            $Query = array("text_clean" => array('$regex' =>  $word), array('$or' => array(
+        if ($twitter == 'true' && $instagram == 'true') {
+            $Query = array("text_clean" => array('$regex' => $word), array('$or' => array(
                 array("api" => "twitter"),
                 array("api" => "instagram")
             )));
@@ -192,7 +205,7 @@ class DB_Function
         $m = new MongoClient();
 
         $db = $m->selectDB("ssma");
-        $Query = array("text_clean" => array('$regex' =>  $word));
+        $Query = array("text_clean" => array('$regex' => $word));
         /*$date = date("dmY", strtotime("2016-03-08"));
         $hoy = date ("dmY");
         $dateCols = [];
@@ -201,11 +214,11 @@ class DB_Function
             array_push($dateCols, $date);
             $date = date("dmY", strtotime($date . '+1 day'));
         }*/
-        $dateCols = ['080316','090316','100316','110316','120316','130316','140316','150316','160316','170316','180316','190316'];
+        $dateCols = ['080316', '090316', '100316', '110316', '120316', '130316', '140316', '150316', '160316', '170316', '180316', '190316'];
         $a = 0;
-        for($b = 0; $b< count($dateCols); $b++){
+        for ($b = 0; $b < count($dateCols); $b++) {
             //$colName = date("dmy");
-            $colName = 'col'.$dateCols[$b]; //'col'. $colName;
+            $colName = 'col' . $dateCols[$b]; //'col'. $colName;
             $collection = $db->selectCollection($colName);
 
             $cursor = $collection->find($Query);
@@ -220,7 +233,7 @@ class DB_Function
                 $arr[$a]["friends_count"] = $col["friends_count"];
                 $arr[$a]["Klout"] = $col["Klout"];
                 $arr[$a]["text_clean"] = $col["text_clean"];
-                $arr[$a]["created_at"] = date_format(date_create($col["created_at"]),"d/m/Y");
+                $arr[$a]["created_at"] = date_format(date_create($col["created_at"]), "d/m/Y");
                 $arr[$a]["id_usuario"] = $col["id_usuario"];
                 $arr[$a]["nombre_usuario"] = $col["nombre_usuario"];
                 $arr[$a]["screen_name"] = $col["screen_name"];
@@ -240,7 +253,9 @@ class DB_Function
         $m->close();
         return $arr;
     }
-    public function changeSent($id, $sentiment){
+
+    public function changeSent($id, $sentiment)
+    {
         $m = new MongoClient();
 
         $db = $m->selectDB("ssma");
@@ -253,8 +268,10 @@ class DB_Function
         $m->close();
         return $cursor;
     }
-    public function getProfilePic($name, $api){
-        if($api == 'twitter'){
+
+    public function getProfilePic($name, $api)
+    {
+        if ($api == 'twitter') {
             header("Access-Control-Allow-Origin: *");
             require_once("/API/twitteroauth.php");
 
@@ -305,9 +322,153 @@ class DB_Function
             */
 
 
-        }else if($api="instagram"){
+        } else if ($api = "instagram") {
 
         }
     }
+
     //</editor-fold>
+
+    private function sendPost($api, $key, $model, $txt){
+        $data = http_build_query(array('key' => $key,
+            'model' => $model,
+            'txt' => $txt,
+            'src' => 'sdk-php-2.0')); // management internal parameter
+        $context = stream_context_create(array('http' => array(
+            'method' => 'POST',
+            'header' =>
+                'Content-type: application/x-www-form-urlencoded' . "\r\n" .
+                'Content-Length: ' . strlen($data) . "\r\n",
+            'content' => $data)));
+
+        $fd = fopen($api, 'r', false, $context);
+        $response = stream_get_contents($fd);
+        fclose($fd);
+        return $response;
+
+    }
+
+    public function sentimentAnalysis($api, $model, $txt)
+    {
+        $dbf = new DB_Function();
+        $boolean = true;
+        $cont = 0;
+        $sentiment = "";
+
+        //<editor-fold desc="KEY Sentiment API">
+        //$api = 'http://textalytics.com/core/sentiment-1.1';
+
+        //https://www.meaningcloud.com/developer/apis
+
+        $api = 'http://api.meaningcloud.com/sentiment-2.0';
+        $key[0] = 'e9ce37fc21e2fbfba29bde1d2fbd3b61'; //socialmediadaac@gmail.com
+        $key[1] = '21089e2646a625584cee07cc52421d24'; //socialmediadaac0@gmail.com
+        $key[2] = '2662039e381619d652afa4bd08b11cf0'; //socialmediadaac1@gmail.com
+        $key[3] = '247d733eb8fc2c8e8fe8e2f5492f1598'; //socialmediadaac2@gmail.com
+        $key[4] = '6e09fa82b045b09fee2e0410baeee945'; //socialmediadaac3@gmail.com
+        $key[5] = '91aa5264fa77df2e3c928cce324d6658'; //socialmediadaac4@gmail.com
+        $key[6] = 'cf803ded8f0c20d1d3247694afb1a3b2'; //socialmediadaac5@gmail.com
+        $key[8] = 'd5af72bc04ee7c663840212cd71edd1a'; //e.acosta@itesm.mx
+
+        $key[9] = ''; // Sacar del while
+        $txt = '';
+        $model = 'auto'; //general_es general_en general_fr auto  // es-general/en-general/fr-general/en-reputation/es-reputation DEPRECATED
+        $keyIndex = 0;
+
+        //</editor-fold>
+
+         while($boolean) {
+             $response = $dbf->sendPost($api, $key[$keyIndex], $model, $txt);
+
+             $json = json_decode($response, true);
+             //$json['status']['remaining_credits'] //Creditos restantes
+             if (isset($json['status']) && isset($json['status']['code'])) {
+                 if ($json['status']['code'] == '0') {
+                     $boolean = false;
+
+                     $sentiment = $json['score_tag'];
+                     $mod = $json['model'];
+
+                 } // 102: You have exceeded the maximum number of credits per month
+                 //Creditos agotados
+                 elseif ($json['status']['code'] == '102' || $json['status']['code'] == '101') {
+                     $var = true;
+                     while ($var):
+                         $keyIndex++;
+                         // We make the request AGAIN WITH NEW KEY and parse the response to an array
+                         $response = sendPost($api, $key[$keyIndex], $model, $txt);
+                         $json = json_decode($response, true);
+                         if (isset($json['status']) && isset($json['status']['code'])) {
+
+                             if (isset($json['score']) && $json['status']['code'] == '0') {
+                                 $sentiment = $json['score_tag'];
+                                 $var = false;
+                             } else if ($json['status']['code'] == '102') {
+                                 // nothing to do...while continue
+                             } elseif ($json['status']['code'] == '100') { // Servicio denegado
+                                 $var = false;
+                             } else {
+                             }
+                         }
+                     endwhile;
+                 }
+                 elseif ($json['status']['code'] == '100' || $json['status']['code'] == '202' || $json['status']['code'] == '203') {
+                     sleep(5);
+                     //$sentiment = 'No disponible';
+                 }
+                 //Contenido demasiado largo
+                 elseif ($json['status']['code'] == '103') {
+                     $boolean = false;
+                     //$sentiment = 'Request too large.';
+                     $sentiment = 'NONE';
+                 }
+                 elseif ($json['status']['code'] == '104') {
+                     sleep(5);
+                     //echo '<br> Request rate limit exceeded.';
+                     //$sentiment = 'Request rate limit exceeded.';
+                 }
+                 elseif ($json['status']['code'] == '200') {
+                     sleep(5);
+                     //echo '<br> Par�metro faltante.';
+                     //$sentiment = ' Parametro faltante.';
+                 }
+                 //Lenguaje no soportado
+                 elseif ($json['status']['code'] == '201' || $json['status']['code'] == '204') {
+                     $sentiment = "NONE";
+                     $boolean =false;
+                     //$sentiment = 'Lenguaje no soportado.';
+                 }
+                 else {
+                     $sentiment = 'N';
+                 }
+                 //<editor-fold desc="CODE">
+                 // 101: The license has expire
+                 /*
+                     0: OK -- Listo
+                     100: Operation denied -- Listo
+                     101: License expired -- Listo
+                     102: Credits per suscription exceeded -- Listo
+                     103: Request too large -- Listo
+                     104: Request rate limit exceeded
+                     200: Missing required parameter(s) - [name of the parameter]
+                     201: Model not supported
+                     202: Engine internal error
+                     203: Cannot connect to service
+                     204: Model not suitable for the identified text language
+                 */
+                 //</editor-fold>
+             }
+
+             // contador para salir del while en caso no realizar ninguna accion
+             if($cont > 2){
+                 $boolean = false;
+             }
+             $cont++;
+
+
+         }
+        return $sentiment;
+
+    }
+
 }
