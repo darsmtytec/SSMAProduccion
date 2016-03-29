@@ -58,6 +58,7 @@ var Login = function () {
          }
          });*/
         $("#login").click(function () {
+            console.log("Click");
             var email = $("#user").val();
             var password = $("#pass").val();
             // Checking for blank fields.
@@ -66,7 +67,7 @@ var Login = function () {
                     // alert( "success" );
                 }).done(function (data) {
                     data = JSON.parse(data);
-                        //console.log(data.success);
+                        console.log(data.success);
 
                         if (data.success == '1') {
                             window.location.replace("dashboard.php");
