@@ -208,39 +208,24 @@ if ($topics[0] != '') {
             if ($phpArraySearch['statuses'] != null && $phpArraySearch['statuses'][$a] != null && $phpArraySearch['statuses'][$a]['id_str'] != '') {
                 $rtImg = false;
                 if ($phpArraySearch['statuses'][$a]['text'][0] == 'R' && $phpArraySearch['statuses'][$a]['text'][1] == 'T' && $phpArraySearch['statuses'][$a]['text'][2] == ' ') {
-                    $rtImg = true;
+                    $rtImg = true;//Si es un re twitt sirve para calcular el del usuario que lo re twittero
                 }
 
-                if ($count <= 30) {
-                    $jsonK = file_get_contents("http://api.klout.com/v2/identity.json/tw/" . $phpArraySearch['statuses'][$a]['user']['id'] . "?key=" . $kloutKey);
-                    $kloutID = json_decode($jsonK, true);
-
-                    $json1 = file_get_contents("http://api.klout.com/v2/user.json/" . $kloutID['id'] . "?key=" . $kloutKey);
-                    $kloutScore = json_decode($json1, true);
-                    $kloutUser = $kloutScore['score']['score'];
-                    $scoreKlout = intval($kloutUser);
-                } // esperar unos segundos y volver a realizar las peticiones
+                if ($count <= 10) {
+                    $scoreKlout = $dbf->klout( $phpArraySearch['statuses'][$a]['user']['id']);
+                }
                 else {
-                    sleep(30);
-                    $count = 0;
-                    $jsonK = file_get_contents("http://api.klout.com/v2/identity.json/tw/" . $phpArraySearch['statuses'][$a]['user']['id'] . "?key=" . $kloutKey);
-                    $kloutID = json_decode($jsonK, true);
+                    sleep(1.5);// esperar unos segundos y volver a realizar las peticiones
 
-                    $json1 = file_get_contents("http://api.klout.com/v2/user.json/" . $kloutID['id'] . "?key=" . $kloutKey);
-                    $kloutScore = json_decode($json1, true);
-                    $kloutUser = $kloutScore['score']['score'];
-                    $scoreKlout = intval($kloutUser);
+                    $count = 0;
+                    $scoreKlout = $dbf->klout( $phpArraySearch['statuses'][$a]['user']['id']);
                 }
                 $count++;
-
                 if ($showSentiment) {
-
                    $txt = $phpArraySearch['statuses'][$a]['text'];
                    $sentiment = $dbf->sentimentAnalysis($api,$model,$txt);
 
                 }
-
-
             //<editor-fold desc="Clean text">
             $strText = '';
             if ($phpArraySearch['statuses'][$a]['text'] != null && $phpArraySearch['statuses'][$a]['text'] != '') {
@@ -248,19 +233,9 @@ if ($topics[0] != '') {
                 $strText = remove_emoji($strText);
             }
             //</editor-fold>
-
+            //Si es un RT se calcula el KLOUT de la persona que realizo el RT
             if ($rtImg) {
-                // Necesitamos calcular el klout de la persona RT
-                $jsonK = file_get_contents("http://api.klout.com/v2/identity.json/tw/" . $phpArraySearch['statuses'][$a]['user']['id'] . "?key=" . $kloutKey);
-                $kloutID = json_decode($jsonK, true);
-
-                $json1 = file_get_contents("http://api.klout.com/v2/user.json/" . $kloutID['id'] . "?key=" . $kloutKey);
-                $kloutScore = json_decode($json1, true);
-                $kloutRT = $kloutScore['score']['score'];
-                $scoreKlout = intval($kloutRT);
-            } else {
-                // si no es RT se coloca el klout del usuario que se busco
-                $scoreKlout = intval($kloutUser);
+                $scoreKlout = $dbf->klout( $phpArraySearch['statuses'][$a]['user']['id'] );
             }
 
             //<editor-fold desc="Arreglo con parametros">
@@ -320,8 +295,7 @@ if ($topics[0] != '') {
 
 echo json_encode($arraySearch);
 }
-else
-if ($accounts[0] != '') {
+else if ($accounts[0] != '') {
 
     for ($c = 0; $c < count($accounts); $c++) {
         $tweetsAccount = $connection->get("https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=" . $accounts[$c] . "&count=" . $notweets);

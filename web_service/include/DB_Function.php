@@ -329,6 +329,7 @@ class DB_Function
 
     //</editor-fold>
 
+    //<editor-fold desc="Sentiment">
     private function sendPost($api, $key, $model, $txt){
         $data = http_build_query(array('key' => $key,
             'model' => $model,
@@ -371,7 +372,6 @@ class DB_Function
         $key[8] = 'd5af72bc04ee7c663840212cd71edd1a'; //e.acosta@itesm.mx
 
         $key[9] = ''; // Sacar del while
-        $txt = '';
         $model = 'auto'; //general_es general_en general_fr auto  // es-general/en-general/fr-general/en-reputation/es-reputation DEPRECATED
         $keyIndex = 0;
 
@@ -470,5 +470,39 @@ class DB_Function
         return $sentiment;
 
     }
+    //</editor-fold>
+
+    //<editor-fold desc="Klout">
+    public function klout($user){
+        $kloutKey[0] = 'hjsske2mer3th85ub6e5bw82';
+        $kloutKey[1] = 'bjp5e6qzeq7ay9yzydh2uq2d'; //darstecmty@gmail.com RedesSociales1
+        $kloutKey[2] = 'fwfzgh4g55mcrytauvew9pmv'; //e.acosta@itesm.mx
+
+        $i=0;
+        $bol= false;
+
+        while(!$bol) {
+            $jsonK = file_get_contents("http://api.klout.com/v2/identity.json/tw/" . $user . "?key=" . $kloutKey[$i]);
+            if($jsonK== false){
+                $i++;
+            }
+            else{
+                $bol=true;
+            }
+
+            //echo "http://api.klout.com/v2/identity.json/tw/" . $user . "?key=" . $kloutKey[$i];
+        }
+        $kloutID = json_decode($jsonK, true);
+        //var_dump($kloutID['id']);
+
+        $json1 = file_get_contents("http://api.klout.com/v2/user.json/" . $kloutID['id'] . "?key=" . $kloutKey[$i]);
+        $kloutScore = json_decode($json1, true);
+        $kloutUser = $kloutScore['score']['score'];
+        $scoreKlout = intval($kloutUser);
+
+        return $scoreKlout;
+
+    }
+    //</editor-fold>
 
 }
