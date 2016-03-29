@@ -211,12 +211,11 @@ if ($topics[0] != '') {
                     $rtImg = true;//Si es un re twitt sirve para calcular el del usuario que lo re twittero
                 }
 
-                if ($count <= 10) {
+                if ($count <= 20) {
                     $scoreKlout = $dbf->klout( $phpArraySearch['statuses'][$a]['user']['id']);
                 }
                 else {
                     sleep(1.5);// esperar unos segundos y volver a realizar las peticiones
-
                     $count = 0;
                     $scoreKlout = $dbf->klout( $phpArraySearch['statuses'][$a]['user']['id']);
                 }
