@@ -29,6 +29,7 @@ class DB_Function
 
     //</editor-fold>
 
+    //<editor-fold desc="User">
     public function getUser($user, $password)
     {
         $password = md5($password);
@@ -53,8 +54,13 @@ class DB_Function
         }
 
     }
+    //</editor-fold>
 
-
+    //<editor-fold desc="Words">
+    /**
+     * Obtener palabras de la tabla de palabras favoritas
+     * @return array
+     */
     public function getWords()
     {
 
@@ -70,7 +76,15 @@ class DB_Function
         return $rawdata;
     }
 
-
+    /**
+     * Insertar palabras nuevas a la tabla dependiendo de los parametros
+     * @param $id
+     * @param $word
+     * @param $active
+     * @param $created_date
+     * @param $created_by
+     * @return array|bool|resource
+     */
     public function insertWords($id, $word, $active, $created_date, $created_by)
     {
 
@@ -137,6 +151,15 @@ class DB_Function
 
     }
 
+    /**
+     * Actualizar una registro en la tabla de palabras favoritas
+     * @param $id
+     * @param $word
+     * @param $active
+     * @param $created_date
+     * @param $created_by
+     * @return bool|resource
+     */
     public function updateWords($id, $word, $active, $created_date, $created_by)
     {
 
@@ -178,8 +201,9 @@ class DB_Function
 
 
     }
+    //</editor-fold>
 
-    //<editor-fold desc="kiwi fresa">
+    //<editor-fold desc="Get information">
     public function getData($word, $apis)
     {
         $twitter = false;
@@ -504,5 +528,9 @@ class DB_Function
 
     }
     //</editor-fold>
+
+    public function chart(){
+
+    }
 
 }
