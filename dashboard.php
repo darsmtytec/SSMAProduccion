@@ -8,9 +8,13 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
 
 <h4>Dashboard1</h4>
-<div class="col-md-6">
+<div class="col-md-6 col-sm-6">
 <div id="myfirstchart" style="height: 250px;"></div>
 </div>
+<div class="col-md-6 col-sm-6">
+    <div id="donut" style="height: 250px;"></div>
+</div>
+
 
 <?php include 'footer.php'; ?>
 <!-- BEGIN PERSONAL SCRIPTS -->

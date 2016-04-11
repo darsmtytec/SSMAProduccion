@@ -4,6 +4,7 @@
 <!-- BEGIN PAGE LEVEL PLUGINS -->
 <link href="assets/global/plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css" rel="stylesheet" type="text/css" />
 <link href="assets/global/plugins/fancybox/source/jquery.fancybox.css" rel="stylesheet" type="text/css" />
+<link href="assets/global/plugins/socicon/socicon.css" rel="stylesheet" type="text/css"/>
 <!-- END PAGE LEVEL PLUGINS -->
 <!-- BEGIN PAGE LEVEL STYLES -->
 <link href="historico/search.min.css" rel="stylesheet" type="text/css" />
@@ -20,6 +21,19 @@
                     <i class="icon-magnifier"></i>
                     <input type="text" class="form-control" placeholder="Término" id="searchWord" />
                 </div>
+                <!--SocialIcons--------------------------------------------------->
+                <div id="section-advanced" class="section">
+                    <h4>Redes Sociales</h4>
+                    <div class="socicons">
+                        <a class="socicon-btn socicon-btn-circle socicon-solid bg-green font-white bg-hover-grey-salsa socicon-twitter tooltips"
+                           data-original-title="Twitter"></a>
+                        <a class="socicon-btn socicon-btn-circle socicon-solid bg-grey-gallery font-white bg-hover-grey-salsa socicon-instagram tooltips"
+                           data-original-title="Instagram"></a>
+
+                    </div>
+                    <input type="hidden" id="apis" value="ti"/>
+                </div>
+                    <!--SocialIcons-->
                <!-- <div class="search-label uppercase">Ordenar por</div>
                 <select class="form-control">
                     <option>Option 1</option>
@@ -43,9 +57,11 @@
             <div class="search-container ">
                 <ul class="search-title">
                     <li class="search-item-header">
-                        <h2  class="col-sm-6" id="countPosts"><i class="font-blue-hoki fa fa-archive"></i>Resultados Búsqueda</h2>
-                        <h2  class="col-sm-6" style="text-align: right;">Exportar<i id="exportResults" class="font-blue-hoki fa fa-download"></i></h2>
-                        <br>
+                        <h2 id="countPosts"><i class="font-blue-hoki fa fa-archive"></i>Resultados Búsqueda</h2>
+                        <!--
+                          <h2  class="col-sm-6" style="text-align: right;">Exportar<i id="exportResults" class="font-blue-hoki fa fa-download"></i></h2>
+                       <form id="formExport" action="/ssma/web_service/exportData.php" target="_blank" method="post"> <input type="hidden" id="arrayExport" name="arrayExport" /></form>
+                          -->
                     </li>
                 </ul>
                 <ul id="listRow">
@@ -55,10 +71,10 @@
                                 <div class="col-sm-1">
                                      <img src="historico/profile.png" onerror="this.src='historico/profile.png'" width=80 id="pic" style="border-radius: 40px;"/>
                                 </div>
-                                <div class="col-sm-4">
+                                <div class="col-sm-5">
                                     <h4 class="search-title" id="post" style="font-size:14px;">texto post</h4>
                                 </div>
-                                <div class="col-sm-1">
+                                <div class="col-sm-2">
                                     <a target="_blank" id="urlpic"><h4 class="search-title" id="user" style="font-size:14px;">nombre de usuario</h4></a>
                                 </div>
                                 <div class="col-sm-1"  id="likes" style="text-align: center;">
@@ -66,18 +82,17 @@
                                 </div>
                                 <div class="col-sm-1" style="text-align: center;">
                                     <p class="search-counter-number" id="sentiment"><i class="font-yellow-soft fa fa-smile-o"></i></p>
-                                   <!-- <p class="search-counter-label uppercase">Sentimiento</p>-->
                                 </div>
                                 <div class="col-sm-1" style="text-align: center;" id="iconPost">
                                     <a href="https://www.instagram.com/p/BCx_ZGJHFSN/" target="_blank"><img src="historico/instagram.png" width=30/></a>
                                 </div>
-                                <div class="col-sm-1" style="text-align: center;" id="datepic">
+                               <!-- <div class="col-sm-1" style="text-align: center;" id="datepic">
                                     <img src="historico/date.png" width=30  />
-                                </div>
+                                </div>-->
                                 <div class="col-sm-1" style="text-align: center;" id="map">
                                     <a target="_blank"><img src="historico/map.png" width=35/></a>
                                 </div>
-                                <div class="col-sm-1" style="text-align: center;">
+                               <!-- <div class="col-sm-1" style="text-align: center;">
                                     <div class="btn-group">
                                         <p class="search-counter-number dropdown-toggle"  data-toggle="dropdown" aria-expanded="false"><a class="font-dark fa fa-ellipsis-v"></a></p>
                                         <ul class="dropdown-menu" role="menu">
@@ -93,14 +108,15 @@
                                             </li>
                                         </ul>
                                     </div>
-                                </div>
+                                </div>-->
                             </div>
-                        </div></li>
+                        </div>
+                    </li>
                 </ul>
                 <div class="search-pagination">
-                    <ul class="pagination">
-                        <li class="page-active" id="pagBase">
-                            <a href="javascript:;"> 1 </a>
+                    <ul class="pagination" id="listPag" >
+                        <li class="page-active" id="0">
+                            <a href="javascript:loadResults(0);" >0 </a>
                         </li>
                     </ul>
                 </div>

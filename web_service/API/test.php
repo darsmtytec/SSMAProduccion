@@ -1,12 +1,10 @@
 <?php
-
 /**
  * Created by PhpStorm.
  * User: L03037373
  * Date: 28/08/2015
  * Time: 12:36 PM
  */
-
 header("Access-Control-Allow-Origin: *");
 require_once("twitteroauth.php");
 require_once '/var/www/html/ssma/web_service/include/DB_Function.php';
@@ -53,7 +51,7 @@ $post[] = '';
 $bol = true;
 $showSentiment = 'true';
 $notweets = 1; //cantidad de tweets a mostrar
-//$sentiment = 'NONE';
+$sentiment = 'NONE';
 $mod = '';
 
 //</editor-fold>
@@ -67,7 +65,7 @@ if (isset($_POST["topic"][0]) && $_POST["topic"][0] != '') {
 }
 else {
 
-    $topico[0] = 'tec de monterrey';
+    $topico[0] = 'factortec';
     /*
     include_once "/var/www/html/ssma/web_service/include/DB_Function.php";
     $db = new DB_Function();
@@ -122,14 +120,19 @@ if (isset($_POST["search"][0]) && $_POST["search"][0] != '') {
 if (isset($_POST["sentiment"]) && $_POST["sentiment"] != '') {
     $showSentiment = $_POST["sentiment"];
 }
+//</editor-fold>
+
+
+//<editor-fold desc="Klout">
+// ************* Klout API ***************************
+$kloutKey = 'hjsske2mer3th85ub6e5bw82';
+
 if ($showSentiment == 'true') {
     $showSentiment = true;
 } else {
     $showSentiment = false;
 }
-
 //</editor-fold>
-
 
 
 //<editor-fold desc="Conexion API Twitter">
@@ -204,27 +207,22 @@ if ($topics[0] != '') {
             if ($phpArraySearch['statuses'] != null && $phpArraySearch['statuses'][$a] != null && $phpArraySearch['statuses'][$a]['id_str'] != '') {
                 $rtImg = false;
                 if ($phpArraySearch['statuses'][$a]['text'][0] == 'R' && $phpArraySearch['statuses'][$a]['text'][1] == 'T' && $phpArraySearch['statuses'][$a]['text'][2] == ' ') {
-                    $rtImg = true;
+                    $rtImg = true;//Si es un re twitt sirve para calcular el del usuario que lo re twittero
                 }
-
                 if ($count <= 20) {
                     $scoreKlout = $dbf->klout( $phpArraySearch['statuses'][$a]['user']['id']);
                 }
                 else {
                     sleep(1.5);// esperar unos segundos y volver a realizar las peticiones
-
                     $count = 0;
                     $scoreKlout = $dbf->klout( $phpArraySearch['statuses'][$a]['user']['id']);
                 }
                 $count++;
                 if ($showSentiment) {
-
                     $txt = $phpArraySearch['statuses'][$a]['text'];
-                    $sentiment = $dbf->sentimentAnalysis($api, $model, $txt);
+                    $sentiment = $dbf->sentimentAnalysis($api,$model,$txt);
 
                 }
-
-
                 //<editor-fold desc="Clean text">
                 $strText = '';
                 if ($phpArraySearch['statuses'][$a]['text'] != null && $phpArraySearch['statuses'][$a]['text'] != '') {
@@ -232,7 +230,7 @@ if ($topics[0] != '') {
                     $strText = remove_emoji($strText);
                 }
                 //</editor-fold>
-
+                //Si es un RT se calcula el KLOUT de la persona que realizo el RT
                 if ($rtImg) {
                     $scoreKlout = $dbf->klout( $phpArraySearch['statuses'][$a]['user']['id'] );
                 }
@@ -258,22 +256,22 @@ if ($topics[0] != '') {
                     $arraySearch[$c]["protected"] = "true";
                 } else {
                     $arraySearch[$c]["protected"] = "false";
+
                 }
                 $arraySearch[$c]["friends_count"] = utf8_encode($phpArraySearch['statuses'][$a]['user']['friends_count']);
                 if ($phpArraySearch['statuses'][$a]['user']['verified']) {
                     $arraySearch[$c]["verified"] = "true";
                 } else {
                     $arraySearch[$c]["verified"] = "false";
+
                 }
                 $arraySearch[$c]["api"] = 'twitter';
                 $arraySearch[$c]["Klout"] = $scoreKlout;
                 $arraySearch[$c]["model"] = $mod;
                 $arraySearch[$c]["sentiment"] = $sentiment;
-                echo "El sentimiento es -> ". $sentiment."<br>";
-                echo "Klout -> ".$scoreKlout."<br><br>";
                 //</editor-fold>
                 //$collection->insert($arraySearch[$c]);
-                /*
+
                 try {
                     if ($phpArraySearch['statuses'][$a]['id_str'] != null) {
                         //$collection->update($arraySearch[$c], array("upsert" => true));
@@ -284,7 +282,6 @@ if ($topics[0] != '') {
                 } catch (MongoWriteConcernException $e) {
                     //echo $e->getMessage(), "\n";
                 }
-                */
                 //array_push($post, $arraySearch);
                 $c++;
                 // $b++;
@@ -447,8 +444,10 @@ else if ($accounts[0] != '') {
                 $arraySearch[$c]["Klout"] = $scoreKlout;
                 $arraySearch[$c]["sentimiento"] = $sentiment;
                 //</editor-fold>
+                /*
                 $collection->insert($arraySearch[$c]);
                 array_push($post, $arraySearch);
+                */
                 $c++;
 
                 //$coll->insert($array);
@@ -469,4 +468,4 @@ else if ($accounts[0] != '') {
     json_encode($response);
 }
 
-//$m->close();
+$m->close();

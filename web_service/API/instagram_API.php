@@ -6,7 +6,7 @@
  * Time: 03:17 PM
  */
 
-require_once '/var/www/html/ssma/web_service/include/DB_Function.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/ssma/web_service/include/DB_Function.php';
 $dbf = new DB_Function();
 $m = new MongoClient();
 $db = $m->selectDB("ssma");

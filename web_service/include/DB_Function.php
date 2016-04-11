@@ -204,45 +204,57 @@ class DB_Function
     //</editor-fold>
 
     //<editor-fold desc="Get information">
-    public function getData($word, $apis)
+    public function getData($word, $apis, $idate, $fdate)
     {
-        $twitter = false;
-        $instagram = false;
-        if (strpos($apis, 't')) {
-            $twitter = 'true';
+        $t = false;
+        $i = false;
+        // si encuentra la i en el post con los valores enviados de redes a buscar
+        $pos = strpos($apis, 't');
+        if ($pos !== false) {
+            $array['api'] = 'twitter';
+            $t = true;
         }
-        if (strpos($apis, 'i')) {
-            $instagram = 'true';
+
+        $pos = strpos($apis, 'i');
+        if ($pos !== false) {
+            $array['api'] = 'instagram';
+            $i = true;
         }
-        $array = array();
-        if ($twitter == 'true') {
-            array_push($array, array("api" => 'twitter'));
+        $Query = array('$and' => array(array("text_clean" => array('$regex' => $word)), $array));
+        // Si solo llegó una red social así se genera el query...si son más de dos redes, determinar la mejor manera de construir el array del OR
+        if($t && $i){
+           // $Query = array('$and' => array(array("text_clean" => array('$regex' => $word)), array('$or'=> array(array('api'=>'twitter'),array('api'=>'instagram')))));
+            $Query = array("text_clean" => array('$regex' => $word));
         }
-        if ($instagram == 'true') {
-        }
-        if ($twitter == 'true' && $instagram == 'true') {
-            $Query = array("text_clean" => array('$regex' => $word), array('$or' => array(
-                array("api" => "twitter"),
-                array("api" => "instagram")
-            )));
-        }
+
         $m = new MongoClient();
 
         $db = $m->selectDB("ssma");
-        $Query = array("text_clean" => array('$regex' => $word));
-        /*$date = date("dmY", strtotime("2016-03-08"));
-        $hoy = date ("dmY");
-        $dateCols = [];
-        while($date < $hoy){
-            echo $date.'<br>';
-            array_push($dateCols, $date);
-            $date = date("dmY", strtotime($date . '+1 day'));
-        }*/
-        $dateCols = ['080316', '090316', '100316', '110316', '120316', '130316', '140316', '150316', '160316', '170316', '180316', '190316','290316'];
+
+        if($idate != ''){
+            $inidate = $idate;
+            $inidate = new DateTime($inidate);
+            $inidateStr = $inidate->format('dmy');
+        }else{
+            $inidate = new DateTime('2016-03-04');
+            $inidateStr = $inidate->format('dmy');
+        }
+
+        if($fdate != ''){
+            $findate = new DateTime($fdate);
+            $findate->add(new DateInterval('P1D'));
+
+            $findate = $findate->format('dmy');
+        }else{
+            $findate = new DateTime();
+            $findate->add(new DateInterval('P1D'));
+            $findate = $findate->format('dmy');
+        }
+
         $a = 0;
-        for ($b = 0; $b < count($dateCols); $b++) {
-            //$colName = date("dmy");
-            $colName = 'col' . $dateCols[$b]; //'col'. $colName;
+
+        while($inidateStr != $findate){
+            $colName = 'col' .$inidateStr;
             $collection = $db->selectCollection($colName);
 
             $cursor = $collection->find($Query);
@@ -270,8 +282,12 @@ class DB_Function
                 $arr[$a]["location"] = $col["location"];
 
                 $arr[$a]["api"] = $col["api"];
+                $arr[$a]["collection"] = $colName;
                 $a++;
             }
+            $inidate->add(new DateInterval('P1D'));
+            $inidateStr = $inidate->format('dmy');
+            //echo $inidateStr.' == '.$findate.'<br>';
         }
 
         $m->close();
@@ -529,8 +545,5 @@ class DB_Function
     }
     //</editor-fold>
 
-    public function chart(){
-
-    }
 
 }

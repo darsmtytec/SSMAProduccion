@@ -7,7 +7,7 @@ $.post("/ssma/web_service/chart.php", function (data) {
     },"json").done(function (data) {
 
     //console.debug(data);
-    console.debug(data['chart'].length);
+    //console.debug(data['chart'].length);
 
     Morris.Bar({
         element: 'myfirstchart',
@@ -17,32 +17,21 @@ $.post("/ssma/web_service/chart.php", function (data) {
         labels: ['Klout',]
     });
 
+}).fail(function (data) {
+    console.log("fail");
+    console.log(data);
 
+});
+$.post("/ssma/web_service/chart2.php", function (data) {
+},"json").done(function (data) {
 
-    //console.log(data.chart[0]);
-    //data = JSON.parse(data);
-    /*
-    var arr = $.map(data, function(el) { return el });
-    var array = [];
+    console.debug(data);
+    console.debug(data['sentiment'].length);
 
-    console.debug(arr["0"]["a"]);
-    console.debug(arr["0"]["y"]);
-
-
-   console.log(array);
-
-
-
-
-
-    Morris.Line({
-        element: 'myfirstchart',
-        data: array,
-        xkey: 'y',
-        ykeys: ['a', 'b'],
-        labels: ['Series A', 'Series B']
+    Morris.Donut({
+        element: 'donut',
+        data: data['sentiment']
     });
-     */
 
 }).fail(function (data) {
     console.log("fail");

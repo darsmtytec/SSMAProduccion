@@ -12,7 +12,7 @@ mysql_select_db("ssma");// Selecting Database.
 
 // Obtener las variables
 $username=$_POST['username']; // Fetching Values from URL.
-$password= $_POST['password'];
+$password= md5($_POST['password']);
 $email=$_POST['email'];
 $nombre=$_POST['nombre'];
 $perfil=$_POST['perfil'];
@@ -24,13 +24,14 @@ $sql = "INSERT INTO user (user, password, email, nombre, perfil,fecha_creado, fe
 if(! $connection )
 {
     die('Could not connect: ' . mysql_error());
+
 }
-
 $result = mysql_query($sql) or die(mysql_error());
-
-if ($result == 1){
+$result = mysql_fetch_array($result);
+if ($result == ''){
     echo 'true';
 } else {
     echo 'false';
 }
+
 mysql_close ($connection); // Connection Closed.

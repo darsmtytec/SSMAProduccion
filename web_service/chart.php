@@ -6,9 +6,9 @@
  * Time: 09:58 AM
  */
 
-include_once "include/DB_Function.php";
+require_once $_SERVER['DOCUMENT_ROOT'].'/ssma/web_service/include/DB_Function.php';
 $dbf = new DB_Function();
-$chart = $dbf->getData('tec','twitter');
+$chart = $dbf->getData('tec','twitter','','');
 
 
 $response = array("success" => 1, "error" => 0);

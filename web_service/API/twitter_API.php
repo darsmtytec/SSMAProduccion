@@ -5,10 +5,9 @@
  * Date: 28/08/2015
  * Time: 12:36 PM
  */
-
 header("Access-Control-Allow-Origin: *");
 require_once("twitteroauth.php");
-require_once '/var/www/html/ssma/web_service/include/DB_Function.php';
+require_once $_SERVER['DOCUMENT_ROOT'].'/ssma/web_service/include/DB_Function.php';
 $dbf = new DB_Function();
 
 $m = new MongoClient();
@@ -50,8 +49,8 @@ $topics[] = '';
 $accounts[] = '';
 $post[] = '';
 $bol = true;
-$showSentiment = 'false';
-$notweets = 100; //cantidad de tweets a mostrar
+$showSentiment = 'true';
+$notweets = 1; //cantidad de tweets a mostrar
 $sentiment = 'NONE';
 $mod = '';
 
@@ -66,8 +65,8 @@ if (isset($_POST["topic"][0]) && $_POST["topic"][0] != '') {
 }
 else {
 
-    //$topico[0] = 'tec de monterrey';
-
+    $topico[0] = 'tec de monterrey';
+    /*
     include_once "/var/www/html/ssma/web_service/include/DB_Function.php";
     $db = new DB_Function();
 
@@ -210,7 +209,6 @@ if ($topics[0] != '') {
                 if ($phpArraySearch['statuses'][$a]['text'][0] == 'R' && $phpArraySearch['statuses'][$a]['text'][1] == 'T' && $phpArraySearch['statuses'][$a]['text'][2] == ' ') {
                     $rtImg = true;//Si es un re twitt sirve para calcular el del usuario que lo re twittero
                 }
-
                 if ($count <= 20) {
                     $scoreKlout = $dbf->klout( $phpArraySearch['statuses'][$a]['user']['id']);
                 }
