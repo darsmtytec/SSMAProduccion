@@ -252,6 +252,7 @@ class DB_Function
         }
 
         $a = 0;
+        $arr = array();
 
         while($inidateStr != $findate){
             $colName = 'col' .$inidateStr;
@@ -260,9 +261,11 @@ class DB_Function
             $cursor = $collection->find($Query);
 
             foreach ($cursor as $col) {
+                //                if(isset()){ }else{ }
+
                 $arr[$a]["id_post"] = $col["id_post"];
-                $arr[$a]["id_tweet"] = $col["id_tweet"];
-                $arr[$a]["likes"] = $col["likes"];
+                //$arr[$a]["id_tweet"] = $col["id_tweet"];
+                if(isset($col["likes"])) {$arr[$a]["likes"] = $col["likes"];}else{$arr[$a]["likes"] = "";}
                 $arr[$a]["cant_retweet"] = $col["cant_retweet"];
                 $arr[$a]["cuentas_que_sigue"] = $col["cuentas_que_sigue"];
                 $arr[$a]["cuentas_que_lo_siguen"] = $col["cuentas_que_lo_siguen"];
@@ -275,14 +278,14 @@ class DB_Function
                 $arr[$a]["screen_name"] = $col["screen_name"];
                 $arr[$a]["foto_perfil"] = $col["foto_perfil"];
                 $arr[$a]["sentiment"] = $col["sentiment"];
-                $arr[$a]["sentimiento"] = $col["sentimiento"];
-                $arr[$a]["url"] = $col["url"];
-                $arr[$a]["type"] = $col["type"];
-
+                //$arr[$a]["sentimiento"] = $col["sentimiento"];
+                if(isset($col["url"])){$arr[$a]["url"] = $col["url"];}else{$arr[$a]["url"] = "";}
+                if(isset($col["type"])){$arr[$a]["type"] = $col["type"];}else{$arr[$a]["type"] = "";}
                 $arr[$a]["location"] = $col["location"];
 
                 $arr[$a]["api"] = $col["api"];
                 $arr[$a]["collection"] = $colName;
+
                 $a++;
             }
             $inidate->add(new DateInterval('P1D'));

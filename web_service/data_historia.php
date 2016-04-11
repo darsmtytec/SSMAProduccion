@@ -16,6 +16,8 @@ $fdate = $_POST['fdate'];
 
 $cols = $db->getData($word, $apis, $idate, $fdate);
 
+
+var_dump($cols);
 if ($cols != false) {
     echo json_encode($cols);
 } else {

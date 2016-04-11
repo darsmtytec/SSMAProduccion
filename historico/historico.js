@@ -6,8 +6,8 @@ twt = fb = inst = tmblr = lkin = blgr = rd = yt = pint = gg = true;
 var numResults = 30;
 var dataArray;
 $(document).ready(function(){
-    $('.page-title').html('<h1>Histórico</h1>');
-    $('#page-breadcrumb').text('Histórico');
+    $('.page-title').html('<h1>Histï¿½rico</h1>');
+    $('#page-breadcrumb').text('Histï¿½rico');
     $('#menu-historico').addClass('active');
     array = [];
 
@@ -24,7 +24,7 @@ $("#searchbtn").click(function(){
    // alert(1);
     console.log($("#apis").val());
     if($.trim($("#searchWord").val()) == ''){
-        swal('Coloque un término a buscar.');
+        swal('Coloque un tï¿½rmino a buscar.');
         return;
     }
     if($("#apis").val() == ''){
@@ -36,7 +36,7 @@ $("#searchbtn").click(function(){
     console.log($("#startDate").text());
     console.log($("#endDate").text());
     $.post( "web_service/data_historia.php",{word:$("#searchWord").val(), apis:$("#apis").val(), idate:$("#startDate").val(),fdate:$("#endDate").val()}, function(data) {
-        // alert( "success" );
+         alert( "success" );
         console.log('INTER: ' + data);
     }, "json")
         .done(function(data) {
@@ -58,7 +58,7 @@ $("#searchbtn").click(function(){
         .fail(function(data) {
             console.log(data);
             swal( "Estamos revisando la situacion..." );
-            // sweetAlert('Intente más tarde.', '', 'error');
+            // sweetAlert('Intente mï¿½s tarde.', '', 'error');
         });
 });
 
@@ -156,8 +156,8 @@ $("#exportResults").click(function(data){
             })
             .fail(function(data) {
                 console.log(data);
-                alert( "Estamos revisando la situación..." );
-                // sweetAlert('Intente más tarde.', '', 'error');
+                alert( "Estamos revisando la situaciï¿½n..." );
+                // sweetAlert('Intente mï¿½s tarde.', '', 'error');
             });*/
 });
 
@@ -230,11 +230,11 @@ function renderResults(data, init, end){
         $("#countPosts").html('<i class="font-blue-hoki fa fa-archive"></i>Resultados B&uacute;squeda: ' + data.length);
     }
 
-    // Limpiar la paginación previa
+    // Limpiar la paginaciï¿½n previa
     var pagBase = $("#listPag #0").detach();
     $('#listPag').empty().append(pagBase);
 
-    // Generar los botones de paginación.
+    // Generar los botones de paginaciï¿½n.
     var showResults = numResults;
     var b = 1;
     while(showResults < data.length){
@@ -250,12 +250,15 @@ function renderResults(data, init, end){
     // Limpiar pagina de resultados previos
     var save0 = $('#listRow #baseRow').detach();
     $('#listRow').empty().append(save0);
+    console.log(data);
 
-    for (i = init; i < end; i++){
+    for (var i = init; i < end; i++){
         if(i > data.length){
             break;
         }
-        console.log(data[i]['collection']);
+        //console.log(data[i]['collection']);
+        console.log(data[i]['id_post']);
+
         cloneTR = $("#baseRow").clone().removeAttr('id').css('display','block').show();
         cloneTR.attr('id', data[i]['id_post']);
         if(data[i]['api'] == 'twitter'){

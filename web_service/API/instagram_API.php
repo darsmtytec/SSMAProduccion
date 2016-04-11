@@ -78,11 +78,10 @@ if (isset($_POST["topic"][0]) && $_POST["topic"][0] != '') {
     $topico = $_POST["topic"];
 }
 else {
-    //$topico[0] = 'tec de monterrey';
-
-    include_once "/var/www/html/ssma/web_service/include/DB_Function.php";
+    $topico[0] = 'tec de monterrey';
+/*
+    require_once $_SERVER['DOCUMENT_ROOT'].'/ssma/web_service/include/DB_Function.php';
     $db = new DB_Function();
-
     $word = $db->getWords();
 
     $a = 0;
@@ -132,7 +131,7 @@ else {
 /************INSTAGRAM API**///////////////////////
 $c = 0;
 for ($b = 0; $b < count($topico); $b++) {
-    $topic[$b] = str_replace(' ', '', $topico[$b]);
+    $topico[$b] = str_replace(' ', '', $topico[$b]);
     //$json1 = file_get_contents("https://api.instagram.com/v1/media/popular?client_id=".$client_id);// Most popular posts
     $json1 = file_get_contents("https://api.instagram.com/v1/tags/" . $topico[$b] . "/media/recent?client_id=" . $client_id);
     $posts = json_decode($json1, true);

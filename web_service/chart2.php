@@ -8,7 +8,8 @@
 
 require_once $_SERVER['DOCUMENT_ROOT'].'/ssma/web_service/include/DB_Function.php';
 $dbf = new DB_Function();
-$chart = $dbf->getData('tec','twitter','','');
+$chart = $dbf->getData('borrego','twitter','','');
+var_dump($chart);
 
 
 $array = array("success" => 1, "error" => 0);

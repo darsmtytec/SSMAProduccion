@@ -21,6 +21,11 @@ $(function(){
     });
 });
 
+/*
+* Método que se ejecuta al darle clic a Buscar
+*
+* */
+
 function submitSearch(){
     $('#search-btn').click(function(){
         //$('#tweetLoad').empty();
@@ -297,7 +302,7 @@ function loadInstagram(){
     var dataItems= {
         topic: items
     };
-    $.post('web_service/instagram_API.php', dataItems, function(data, textStatus) {
+    $.post('web_service/API/instagram_API.php', dataItems, function(data, textStatus) {
         //console.log(data);
     }, "json").done(function(data){
         //console.log(data);
