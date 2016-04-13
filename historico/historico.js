@@ -31,25 +31,21 @@ $("#searchbtn").click(function(){
         swal('Seleccione al menos una red social para buscar.');
         return;
     }
-    console.log($("#startDate").val());
+    /*console.log($("#startDate").val());
     console.log($("#endDate").val());
     console.log($("#startDate").text());
-    console.log($("#endDate").text());
+    console.log($("#endDate").text());*/
     $.post( "web_service/data_historia.php",{word:$("#searchWord").val(), apis:$("#apis").val(), idate:$("#startDate").val(),fdate:$("#endDate").val()}, function(data) {
-         alert( "success" );
+         //alert( "success" );
         console.log('INTER: ' + data);
     }, "json")
         .done(function(data) {
-            console.log(data);
             if(data == null){
                 swal('No hay resultados');
                 return;
             }
 
             dataArray = data;
-
-
-
             renderResults(data, 0, numResults);
 
             $("#divResults").css('display','block');
@@ -57,8 +53,7 @@ $("#searchbtn").click(function(){
         })
         .fail(function(data) {
             console.log(data);
-            swal( "Estamos revisando la situacion..." );
-            // sweetAlert('Intente m�s tarde.', '', 'error');
+        //-->   swal( "Estamos revisando la situacion..." );
         });
 });
 
@@ -218,6 +213,7 @@ function loadResults(page){
 }
 
 function renderResults(data, init, end){
+    console.log("tamaño-> "+data.length);
 
     if(data.length > numResults){
         if(end > data.length){
@@ -250,8 +246,9 @@ function renderResults(data, init, end){
     // Limpiar pagina de resultados previos
     var save0 = $('#listRow #baseRow').detach();
     $('#listRow').empty().append(save0);
-    console.log(data);
-
+    console.log("data"+data);
+    console.log(init);
+    console.log(end);
     for (var i = init; i < end; i++){
         if(i > data.length){
             break;
@@ -259,16 +256,16 @@ function renderResults(data, init, end){
         //console.log(data[i]['collection']);
         console.log(data[i]['id_post']);
 
-        cloneTR = $("#baseRow").clone().removeAttr('id').css('display','block').show();
+        var cloneTR = $("#baseRow").clone().removeAttr('id').css('display','block').show();
         cloneTR.attr('id', data[i]['id_post']);
         if(data[i]['api'] == 'twitter'){
             cloneTR.find('#urlpic').attr('href', 'https://twitter.com/' + data[i]['screen_name']);
             if(data[i]['id_tweet'] != '' && data[i]['id_tweet'] != null && data[i]['id_tweet'] != 'null'){
-                cloneTR.find('#iconPost').html('<a href="https://twitter.com/' + data[i]['screen_name'] + '/status/' + data[i]['id_tweet'] + '" target="_blank"><img src="historico/twitter.png" width=30/></a>&nbsp;<img src="historico/klout.png" width=35/>' + data[i]['Klout']);
+                cloneTR.find('#iconPost').html('<a href="https://twitter.com/' + data[i]['screen_name'] + '/status/' + data[i]['id_tweet'] + '" target="_blank"><img src="historico/twitter.png" width=30/></a><br><img src="historico/klout.png" width=35/>' + data[i]['Klout']);
                 cloneTR.find('#sentimentEdit').attr('href','javascript:changeSentiment("'+ data[i]['id_tweet'] +'","'+ data[i]['sentiment'] +'");');
                 cloneTR.find('#refreshPic').attr('href','javascript:refreshPic("'+ data[i]['id_tweet'] +'","'+ data[i]['screen_name'] +'","twitter");');
             }else if(data[i]['id_post'] != '' && data[i]['id_post'] != null && data[i]['id_post'] != 'null'){
-                cloneTR.find('#iconPost').html('<a href="https://twitter.com/' + data[i]['screen_name'] + '/status/' + data[i]['id_post'] + '" target="_blank"><img src="historico/twitter.png" width=30/></a>&nbsp;<img src="historico/klout.png" width=35/>' + data[i]['Klout']);
+                cloneTR.find('#iconPost').html('<a href="https://twitter.com/' + data[i]['screen_name'] + '/status/' + data[i]['id_post'] + '" target="_blank"><img src="historico/twitter.png" width=30/></a><br><img src="historico/klout.png" width=35/>' + data[i]['Klout']);
                 cloneTR.find('#sentimentEdit').attr('href','javascript:changeSentiment("'+ data[i]['id_post'] +'","'+ data[i]['sentiment'] +'");');
                 cloneTR.find('#refreshPic').attr('href','javascript:refreshPic("'+ data[i]['id_post'] +'","'+ data[i]['screen_name'] +'","twitter");');
             }else{
@@ -311,7 +308,8 @@ function renderResults(data, init, end){
                 }
             }
             cloneTR.find('#pic').attr('src', foto);
-        }else if(data[i]['api'] == 'instagram'){
+        }
+        else if(data[i]['api'] == 'instagram'){
             cloneTR.find('#urlpic').attr('href', 'https://www.instagram.com/' + data[i]['nombre_usuario']);
             cloneTR.find('#sentimentEdit').attr('href','javascript:changeSentiment("'+ data[i]['id_post'] +'","'+ data[i]['sentiment'] +'");');
             cloneTR.find('#refreshPic').attr('href','javascript:refreshPic("'+ data[i]['id_post'] +'","'+ data[i]['nombre_usuario'] +'","instagram");');
@@ -335,15 +333,18 @@ function renderResults(data, init, end){
 
         if(data[i]['sentiment'] == 'P' || data[i]['sentiment'] == 'P+'){
             cloneTR.find('#sentiment').html('<i class="font-green-soft fa fa-smile-o"></i>');
-        }else if(data[i]['sentiment'] == 'N' || data[i]['sentiment'] == 'N+'){
+        }
+        else if(data[i]['sentiment'] == 'N' || data[i]['sentiment'] == 'N+'){
             cloneTR.find('#sentiment').html('<i class="font-red-soft fa fa-frown-o"></i>');
-        }else{
+        }
+        else{
             cloneTR.find('#sentiment').html('<i class="font-gray-soft fa fa-meh-o"></i>');
         }
         // cloneTR.find('#datepic').html('<img src="historico/date.png" width=30  />' + data[i]['created_at']);
         if(data[i]['location'] != null && data[i]['location'] != '' &&  data[i]["location"]["latitude"] != undefined && data[i]["location"]["longitude"] != undefined &&  data[i]["location"]["latitude"] != '' && data[i]["location"]["longitude"] != ''){
             cloneTR.find('#map').html('<a href="http://maps.google.com/maps?q=loc:' + data[i]["location"]["latitude"] + '+' + data[i]["location"]["longitude"] + '" target="_blank"><img src="historico/map.png" width=35/></a>');
-        }else{
+        }
+        else{
             cloneTR.find('#map').html('');
         }
         $('#listRow').append(cloneTR).show();

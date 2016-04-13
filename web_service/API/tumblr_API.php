@@ -34,7 +34,7 @@ function removeAccents($str)
 $topicsTumblr = [];
 $post[] = '';
 $sentiment = "NONE";
-
+$arraySearch = [];
 
 //<editor-fold desc="Terminos">
 if (isset($_POST['search']) && $_POST['search'] != '') {

@@ -9,15 +9,16 @@ require_once $_SERVER['DOCUMENT_ROOT'].'/ssma/web_service/include/DB_Function.ph
 $db = new DB_Function();
 
 $response = array("success" => 0, "error" => 0, "msg" => '');
+
 $word = $_POST['word']; //'factorTec';
 $apis = $_POST['apis'];
 $idate = $_POST['idate'];
 $fdate = $_POST['fdate'];
 
+
 $cols = $db->getData($word, $apis, $idate, $fdate);
 
 
-var_dump($cols);
 if ($cols != false) {
     echo json_encode($cols);
 } else {

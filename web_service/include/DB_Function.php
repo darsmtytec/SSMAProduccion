@@ -222,8 +222,8 @@ class DB_Function
         }
         $Query = array('$and' => array(array("text_clean" => array('$regex' => $word)), $array));
         // Si solo llegó una red social así se genera el query...si son más de dos redes, determinar la mejor manera de construir el array del OR
-        if($t && $i){
-           // $Query = array('$and' => array(array("text_clean" => array('$regex' => $word)), array('$or'=> array(array('api'=>'twitter'),array('api'=>'instagram')))));
+        if ($t && $i) {
+            // $Query = array('$and' => array(array("text_clean" => array('$regex' => $word)), array('$or'=> array(array('api'=>'twitter'),array('api'=>'instagram')))));
             $Query = array("text_clean" => array('$regex' => $word));
         }
 
@@ -231,21 +231,21 @@ class DB_Function
 
         $db = $m->selectDB("ssma");
 
-        if($idate != ''){
+        if ($idate != '') {
             $inidate = $idate;
             $inidate = new DateTime($inidate);
             $inidateStr = $inidate->format('dmy');
-        }else{
+        } else {
             $inidate = new DateTime('2016-03-04');
             $inidateStr = $inidate->format('dmy');
         }
 
-        if($fdate != ''){
+        if ($fdate != '') {
             $findate = new DateTime($fdate);
             $findate->add(new DateInterval('P1D'));
 
             $findate = $findate->format('dmy');
-        }else{
+        } else {
             $findate = new DateTime();
             $findate->add(new DateInterval('P1D'));
             $findate = $findate->format('dmy');
@@ -254,36 +254,108 @@ class DB_Function
         $a = 0;
         $arr = array();
 
-        while($inidateStr != $findate){
-            $colName = 'col' .$inidateStr;
+        while ($inidateStr != $findate) {
+            $colName = 'col' . $inidateStr;
             $collection = $db->selectCollection($colName);
 
             $cursor = $collection->find($Query);
 
             foreach ($cursor as $col) {
-                //                if(isset()){ }else{ }
-
-                $arr[$a]["id_post"] = $col["id_post"];
-                //$arr[$a]["id_tweet"] = $col["id_tweet"];
-                if(isset($col["likes"])) {$arr[$a]["likes"] = $col["likes"];}else{$arr[$a]["likes"] = "";}
-                $arr[$a]["cant_retweet"] = $col["cant_retweet"];
-                $arr[$a]["cuentas_que_sigue"] = $col["cuentas_que_sigue"];
-                $arr[$a]["cuentas_que_lo_siguen"] = $col["cuentas_que_lo_siguen"];
-                $arr[$a]["friends_count"] = $col["friends_count"];
-                $arr[$a]["Klout"] = $col["Klout"];
-                $arr[$a]["text_clean"] = $col["text_clean"];
-                $arr[$a]["created_at"] = date_format(date_create($col["created_at"]), "d/m/Y");
-                $arr[$a]["id_usuario"] = $col["id_usuario"];
-                $arr[$a]["nombre_usuario"] = $col["nombre_usuario"];
-                $arr[$a]["screen_name"] = $col["screen_name"];
-                $arr[$a]["foto_perfil"] = $col["foto_perfil"];
-                $arr[$a]["sentiment"] = $col["sentiment"];
-                //$arr[$a]["sentimiento"] = $col["sentimiento"];
-                if(isset($col["url"])){$arr[$a]["url"] = $col["url"];}else{$arr[$a]["url"] = "";}
-                if(isset($col["type"])){$arr[$a]["type"] = $col["type"];}else{$arr[$a]["type"] = "";}
-                $arr[$a]["location"] = $col["location"];
-
-                $arr[$a]["api"] = $col["api"];
+                if (isset($col["id_post"])) {
+                    $arr[$a]["id_post"] = $col["id_post"];
+                } else {
+                    $arr[$a]["id_post"] = "";
+                }
+                if (isset($col["likes"])) {
+                    $arr[$a]["likes"] = $col["likes"];
+                } else {
+                    $arr[$a]["likes"] = "";
+                }
+                if (isset($col["cant_retweet"])) {
+                    $arr[$a]["cant_retweet"] = $col["cant_retweet"];
+                } else {
+                    $arr[$a]["cant_retweet"] = "";
+                }
+                if (isset($col["cuentas_que_sigue"])) {
+                    $arr[$a]["cuentas_que_sigue"] = $col["cuentas_que_sigue"];
+                } else {
+                    $arr[$a]["cuentas_que_sigue"] = "";
+                }
+                if (isset($col["cuentas_que_sigue"])) {
+                    $arr[$a]["cuentas_que_sigue"] = $col["cuentas_que_sigue"];
+                } else {
+                    $arr[$a]["cuentas_que_sigue"] = "";
+                }
+                if (isset($col["cuentas_que_lo_siguen"])) {
+                    $arr[$a]["cuentas_que_lo_siguen"] = $col["cuentas_que_lo_siguen"];
+                } else {
+                    $arr[$a]["cuentas_que_lo_siguen"] = "";
+                }
+                if (isset($col["friends_count"])) {
+                    $arr[$a]["friends_count"] = $col["friends_count"];
+                } else {
+                    $arr[$a]["friends_count"] = "";
+                }
+                if (isset($col["Klout"])) {
+                    $arr[$a]["Klout"] = $col["Klout"];
+                } else {
+                    $arr[$a]["Klout"] = "";
+                }
+                if (isset($col["text_clean"])) {
+                    $arr[$a]["text_clean"] = $col["text_clean"];
+                } else {
+                    $arr[$a]["text_clean"] = "";
+                }
+                if (isset($col["created_at"]) &&$col["created_at"] != '') {
+                  //  $arr[$a]["created_at"] = date_format(date_create($col["created_at"]), "d/m/Y");
+                } else {
+                    $arr[$a]["created_at"] = "";
+                }
+                if (isset($col["id_usuario"])) {
+                    $arr[$a]["id_usuario"] = $col["id_usuario"];
+                } else {
+                    $arr[$a]["id_usuario"] = "";
+                }
+                if (isset($col["nombre_usuario"])) {
+                    $arr[$a]["nombre_usuario"] = $col["nombre_usuario"];
+                } else {
+                    $arr[$a]["nombre_usuario"] = "";
+                }
+                if (isset($col["screen_name"])) {
+                    $arr[$a]["screen_name"] = $col["screen_name"];
+                } else {
+                    $arr[$a]["screen_name"] = "";
+                }
+                if (isset($col["foto_perfil"])) {
+                    $arr[$a]["foto_perfil"] = $col["foto_perfil"];
+                } else {
+                    $arr[$a]["foto_perfil"] = "";
+                }
+                if (isset($col["sentiment"])) {
+                    $arr[$a]["sentiment"] = $col["sentiment"];
+                } else {
+                    $arr[$a]["sentiment"] = "";
+                }
+                if (isset($col["url"])) {
+                    $arr[$a]["url"] = $col["url"];
+                } else {
+                    $arr[$a]["url"] = "";
+                }
+                if (isset($col["type"])) {
+                    $arr[$a]["type"] = $col["type"];
+                } else {
+                    $arr[$a]["type"] = "";
+                }
+                if (isset($col["location"])) {
+                    $arr[$a]["location"] = $col["location"];
+                } else {
+                    $arr[$a]["location"] = "";
+                }
+                if (isset($col["api"])) {
+                    $arr[$a]["api"] = $col["api"];
+                } else {
+                    $arr[$a]["api"] = "";
+                }
                 $arr[$a]["collection"] = $colName;
 
                 $a++;
@@ -370,10 +442,71 @@ class DB_Function
         }
     }
 
+    public function getAll()
+    {
+        $m = new MongoClient();
+
+        $db = $m->selectDB("ssma");
+
+
+        $inidate = new DateTime('2016-03-04');
+        $inidateStr = $inidate->format('dmy');
+
+        $findate = new DateTime();
+        $findate->add(new DateInterval('P1D'));
+        $findate = $findate->format('dmy');
+
+
+        $a = 0;
+        $arr = array();
+        $arr[0] = array("id_post"=> '');
+        while ($inidateStr != $findate) {
+            $colName = 'col' . $inidateStr;
+            $collection = $db->selectCollection($colName);
+
+            $cursor = $collection->find();
+
+
+            foreach ($cursor as $col) {
+                // if(isset()){ }else{ }
+                //var_dump($col["id_post"]);
+                if(isset($col["id_post"])){
+                    $arr[$a]["id_post"] = $col["id_post"];
+                }
+                else{
+                    $arr[$a]["id_post"] = 'N/A';
+
+                }
+                if(isset($col["text_clean"])){
+                    $arr[$a]["text_clean"] = $col["text_clean"];
+                }
+
+                if(isset($col["sentiment"])){
+                    $arr[$a]["sentiment"] = $col["sentiment"];
+                }else{
+                    $arr[$a]["sentiment"] = "NONE";
+                }
+
+                $arr[$a]["api"] = $col["api"];
+                $arr[$a]["collection"] = $colName;
+                //echo $a."<br>";
+                $a++;
+            }
+            $inidate->add(new DateInterval('P1D'));
+            $inidateStr = $inidate->format('dmy');
+            //echo $inidateStr.' == '.$findate.'<br>';
+        }
+
+        $m->close();
+        return $arr;
+
+    }
+
     //</editor-fold>
 
     //<editor-fold desc="Sentiment">
-    private function sendPost($api, $key, $model, $txt){
+    private function sendPost($api, $key, $model, $txt)
+    {
         $data = http_build_query(array('key' => $key,
             'model' => $model,
             'txt' => $txt,
@@ -392,7 +525,7 @@ class DB_Function
 
     }
 
-    public function sentimentAnalysis($api, $model, $txt)
+    public function sentimentAnalysis($txt)
     {
         $dbf = new DB_Function();
         $boolean = true;
@@ -412,125 +545,156 @@ class DB_Function
         $key[4] = '6e09fa82b045b09fee2e0410baeee945'; //socialmediadaac3@gmail.com
         $key[5] = '91aa5264fa77df2e3c928cce324d6658'; //socialmediadaac4@gmail.com
         $key[6] = 'cf803ded8f0c20d1d3247694afb1a3b2'; //socialmediadaac5@gmail.com
-        $key[8] = 'd5af72bc04ee7c663840212cd71edd1a'; //e.acosta@itesm.mx
+        $key[7] = 'd5af72bc04ee7c663840212cd71edd1a'; //e.acosta@itesm.mx
 
-        $key[9] = ''; // Sacar del while
+        //Nuevas
+        $key[8] = '518948a634b3328d2d4a745e86490cf7'; //darsmtytec1@gmail.com
+        $key[9] = '9e1ae60da01ed968c04e7349ff7c2a30'; //ana.serna3@gmail.com
+        $key[10] = 'b599d69e39814c89e29dea30fc4c1205'; //ssppaammeerr@hotmail.com
+
+
+        $key[11] = ''; // Sacar del while
         $model = 'auto'; //general_es general_en general_fr auto  // es-general/en-general/fr-general/en-reputation/es-reputation DEPRECATED
         $keyIndex = 0;
 
         //</editor-fold>
 
-         while($boolean) {
-             $response = $dbf->sendPost($api, $key[$keyIndex], $model, $txt);
+        while ($boolean) {
+            $response = $dbf->sendPost($api, $key[$keyIndex], $model, $txt);
 
-             $json = json_decode($response, true);
-             //$json['status']['remaining_credits'] //Creditos restantes
-             if (isset($json['status']) && isset($json['status']['code'])) {
-                 if ($json['status']['code'] == '0') {
-                     $boolean = false;
+            $json = json_decode($response, true);
+            //$json['status']['remaining_credits'] //Creditos restantes
+            if (isset($json['status']) && isset($json['status']['code'])) {
 
-                     $sentiment = $json['score_tag'];
-                     $mod = $json['model'];
+                if ($json['status']['code'] == '0') {
+                    $boolean = false;
 
-                 } // 102: You have exceeded the maximum number of credits per month
-                 //Creditos agotados
-                 elseif ($json['status']['code'] == '102' || $json['status']['code'] == '101') {
-                     $var = true;
-                     while ($var):
-                         $keyIndex++;
-                         // We make the request AGAIN WITH NEW KEY and parse the response to an array
-                         $response = sendPost($api, $key[$keyIndex], $model, $txt);
-                         $json = json_decode($response, true);
-                         if (isset($json['status']) && isset($json['status']['code'])) {
+                    $sentiment = $json['score_tag'];
+                    //echo "2-sentiment-> ".$sentiment;
 
-                             if (isset($json['score']) && $json['status']['code'] == '0') {
-                                 $sentiment = $json['score_tag'];
-                                 $var = false;
-                             } else if ($json['status']['code'] == '102') {
-                                 // nothing to do...while continue
-                             } elseif ($json['status']['code'] == '100') { // Servicio denegado
-                                 $var = false;
-                             } else {
-                             }
-                         }
-                     endwhile;
-                 }
-                 elseif ($json['status']['code'] == '100' || $json['status']['code'] == '202' || $json['status']['code'] == '203') {
-                     sleep(5);
-                     //$sentiment = 'No disponible';
-                 }
-                 //Contenido demasiado largo
-                 elseif ($json['status']['code'] == '103') {
-                     $boolean = false;
-                     //$sentiment = 'Request too large.';
-                     $sentiment = 'NONE';
-                 }
-                 elseif ($json['status']['code'] == '104') {
-                     sleep(5);
-                     //echo '<br> Request rate limit exceeded.';
-                     //$sentiment = 'Request rate limit exceeded.';
-                 }
-                 elseif ($json['status']['code'] == '200') {
-                     sleep(5);
-                     //echo '<br> Par�metro faltante.';
-                     //$sentiment = ' Parametro faltante.';
-                 }
-                 //Lenguaje no soportado
-                 elseif ($json['status']['code'] == '201' || $json['status']['code'] == '204') {
-                     $sentiment = "NONE";
-                     $boolean =false;
-                     //$sentiment = 'Lenguaje no soportado.';
-                 }
-                 else {
-                     $sentiment = 'N';
-                 }
-                 //<editor-fold desc="CODE">
-                 // 101: The license has expire
-                 /*
-                     0: OK -- Listo
-                     100: Operation denied -- Listo
-                     101: License expired -- Listo
-                     102: Credits per suscription exceeded -- Listo
-                     103: Request too large -- Listo
-                     104: Request rate limit exceeded
-                     200: Missing required parameter(s) - [name of the parameter]
-                     201: Model not supported
-                     202: Engine internal error
-                     203: Cannot connect to service
-                     204: Model not suitable for the identified text language
-                 */
-                 //</editor-fold>
-             }
+                    $mod = $json['model'];
 
-             // contador para salir del while en caso no realizar ninguna accion
-             if($cont > 2){
-                 $boolean = false;
-             }
-             $cont++;
+                } // 102: You have exceeded the maximum number of credits per month
+                //Creditos agotados
+                elseif ($json['status']['code'] == '102' || $json['status']['code'] == '101') {
+                    $var = true;
+                    while ($var) {
+                        $keyIndex++;
+                        // We make the request AGAIN WITH NEW KEY and parse the response to an array
+                        $response = $dbf->sendPost($api, $key[$keyIndex], $model, $txt);
+                        $json = json_decode($response, true);
+                        //var_dump($json);
+
+                        if (isset($json['status']) && isset($json['status']['code'])) {
+                            if ($json['status']['code'] == '0') {
+
+                                $sentiment = $json['score_tag'];
+                                //echo "1-sentiment-> ".$sentiment;
+                                $var = false;
+                            } else if ($json['status']['code'] == '102') {
+                                // nothing to do...while continue
+                            } elseif ($json['status']['code'] == '100') { // Servicio denegado
+                                $var = false;
+                            } else {
+                            }
+                        }
+
+                        //echo "<br>Sentiment Key ->>".$keyIndex."<br>";
+
+                    }
+                } elseif ($json['status']['code'] == '100' || $json['status']['code'] == '202' || $json['status']['code'] == '203') {
+                    sleep(5);
+                    //$sentiment = 'No disponible';
+                } //Contenido demasiado largo
+                elseif ($json['status']['code'] == '103') {
+                    $boolean = false;
+                    //$sentiment = 'Request too large.';
+                    $sentiment = 'NONE';
+                } elseif ($json['status']['code'] == '104') {
+                    sleep(5);
+                    //echo '<br> Request rate limit exceeded.';
+                    //$sentiment = 'Request rate limit exceeded.';
+                } elseif ($json['status']['code'] == '200') {
+                    sleep(5);
+                    //echo '<br> Par�metro faltante.';
+                    //$sentiment = ' Parametro faltante.';
+                } //Lenguaje no soportado
+                elseif ($json['status']['code'] == '201' || $json['status']['code'] == '204') {
+                    $sentiment = "NONE";
+                    $boolean = false;
+                    //$sentiment = 'Lenguaje no soportado.';
+                } else {
+                    $sentiment = 'N';
+                }
+                //<editor-fold desc="CODE">
+                // 101: The license has expire
+                /*
+                    0: OK -- Listo
+                    100: Operation denied -- Listo
+                    101: License expired -- Listo
+                    102: Credits per suscription exceeded -- Listo
+                    103: Request too large -- Listo
+                    104: Request rate limit exceeded
+                    200: Missing required parameter(s) - [name of the parameter]
+                    201: Model not supported
+                    202: Engine internal error
+                    203: Cannot connect to service
+                    204: Model not suitable for the identified text language
+                */
+                //</editor-fold>
+            }
+
+            // contador para salir del while en caso no realizar ninguna accion
+            if ($cont > 2) {
+                $boolean = false;
+            }
+            $cont++;
 
 
-         }
+        }
+        //var_dump($sentiment);
         return $sentiment;
 
     }
+
+    public function renewSentiment($id,$txt){
+
+        $m = new MongoClient();
+
+        $db = $m->selectDB("ssma");
+        $colName = date("dmy");
+        $colName = 'col'; //'100316'; //.;00316'; //.;
+        $collection = $db->selectCollection($colName);
+        $Query = array("id_post" => $id);
+        $nuevosdatos = array('$set' => array("sentiment" => $sentiment));
+        $cursor = $collection->update($Query, $nuevosdatos);
+        $m->close();
+        return $cursor;
+
+    }
+
+
     //</editor-fold>
 
     //<editor-fold desc="Klout">
-    public function klout($user){
+    public function klout($user)
+    {
         $kloutKey[0] = 'hjsske2mer3th85ub6e5bw82';
         $kloutKey[1] = 'bjp5e6qzeq7ay9yzydh2uq2d'; //darstecmty@gmail.com RedesSociales1
         $kloutKey[2] = 'fwfzgh4g55mcrytauvew9pmv'; //e.acosta@itesm.mx
+        $kloutKey[3] = 'yhs6qgsuspjxr2v8muy5nfpz'; //darsmtytec1@gmail.com
 
-        $i=0;
-        $bol= false;
-
-        while(!$bol) {
+        $i = 0;
+        $bol = false;
+        sleep(2);
+        while (!$bol) {
             $jsonK = file_get_contents("http://api.klout.com/v2/identity.json/tw/" . $user . "?key=" . $kloutKey[$i]);
-            if($jsonK== false){
+            //var_dump($http_response_header);
+
+            if ($jsonK == false) {
                 $i++;
-            }
-            else{
-                $bol=true;
+            } else {
+                $bol = true;
             }
 
             //echo "http://api.klout.com/v2/identity.json/tw/" . $user . "?key=" . $kloutKey[$i];

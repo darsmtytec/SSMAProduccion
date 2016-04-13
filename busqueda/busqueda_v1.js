@@ -222,7 +222,7 @@ function loadTweets (){
         topic: items
     };
 
-    $.post('web_service/twitter_API.php', dataItems, function(data, textStatus) {
+    $.post('web_service/API/twitter_API.php', dataItems, function(data, textStatus) {
 
     }, "json").done(function(data) {
             $('[data-content="social-twitter-count"]').text(data.length);
@@ -370,7 +370,7 @@ function loadYoutube () {
         topic: items
     };
 
-    $.post('web_service/youtube_API.php', dataItems, function (data, textStatus) {
+    $.post('web_service/API/youtube_API.php', dataItems, function (data, textStatus) {
 
     }, "json").done(function (data) {
         $('[data-content="social-youtube-count"]').text(data.length);
@@ -397,7 +397,7 @@ function loadTumblr () {
         topic: items
     };
 
-    $.post('web_service/tumblr_API.php', dataItems, function (data, textStatus) {
+    $.post('web_service/API/tumblr_API.php', dataItems, function (data, textStatus) {
 
     }, "json").done(function (data) {
         $('[data-content="social-tumblr-count"]').text(data.length-1);
@@ -432,7 +432,7 @@ function loadReddit(){
         topic: items
     };
 
-    $.post('web_service/reddit_API.php', dataItems, function(data, textStatus) {
+    $.post('web_service/API/reddit_API.php', dataItems, function(data, textStatus) {
 
     }, "json").done(function(data) {
         $('[data-content="social-reddit-count"]').text(data.length);

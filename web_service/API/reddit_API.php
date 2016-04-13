@@ -4,7 +4,7 @@
  * User: L03037373
  * Date: 01/09/2015
  */
-require_once '../include/DB_Function.php';
+require_once '/opt/lampp/htdocs/ssma/web_service/include/DB_Function.php';
 $dbf = new DB_Function();
 $m = new MongoClient();
 $db = $m->selectDB("ssma");
@@ -126,7 +126,7 @@ for ($d = 0; $d < count($topicsReddit); $d++) { // count($topicsReddit)
 
             if ($showSentiment) {
                 $txt = $title;
-                $sentiment = $dbf->sentimentAnalysis($api, $model, $txt);
+                $sentiment = $dbf->sentimentAnalysis($txt);
             }
 
             //limpieza reddit

@@ -19,7 +19,7 @@
                 <div class="search-label uppercase">Buscar...</div>
                 <div class="input-icon right">
                     <i class="icon-magnifier"></i>
-                    <input type="text" class="form-control" placeholder="Término" id="searchWord" />
+                    <input type="text" class="form-control" placeholder="Término" id="searchWord" value="factortec" />
                 </div>
                 <!--SocialIcons--------------------------------------------------->
                 <div id="section-advanced" class="section">
@@ -121,7 +121,7 @@
                     </ul>
                 </div>
             </div>
-        </div> 
+        </div>
     </div>
 </div>
 

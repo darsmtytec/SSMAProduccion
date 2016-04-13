@@ -6,14 +6,15 @@
  * Time: 12:36 PM
  */
 header("Access-Control-Allow-Origin: *");
+date_default_timezone_set("America/Monterrey");
 require_once("twitteroauth.php");
-require_once '/var/www/html/ssma/web_service/include/DB_Function.php';
+require_once '/opt/lampp/htdocs/ssma/web_service/include/DB_Function.php';
 $dbf = new DB_Function();
 /*
 $m = new MongoClient();
 $db = $m->selectDB("ssma");
 $colName = date("dmy");
-$colName = 'col' . $colName;
+$colName = 'col'. $colName;
 $collection = $db->selectCollection($colName);
 */
 //<editor-fold desc="Remove accents">
@@ -65,9 +66,8 @@ if (isset($_POST["topic"][0]) && $_POST["topic"][0] != '') {
 }
 else {
 
-    $topico[0] = 'factortec';
-    /*
-    include_once "/var/www/html/ssma/web_service/include/DB_Function.php";
+    //$topico[0] = 'tec de monterrey';
+    require_once '/opt/lampp/htdocs/ssma/web_service/include/DB_Function.php';
     $db = new DB_Function();
 
     $word = $db->getWords();
@@ -75,7 +75,7 @@ else {
     $a = 0;
     foreach ($word as $palabra) {
         $topico[$a] = $palabra["word"];
-        //echo $topico[$a];
+        //echo $topics[$a]."<br>";
         $a++;
     }
     /*
@@ -169,7 +169,7 @@ if ($topico[0] != '') {
     foreach ($topico as $eachTopic) {
         array_push($topics, $eachTopic);
     }
-    //var_dump($topics);
+    var_dump($topics);
 }
 if ($word[0] != '') {
     //$word = $_POST["search"];
@@ -184,19 +184,17 @@ if ($word[0] != '') {
 
 //https://www.meaningcloud.com/developer/apis
 
-$api = 'http://api.meaningcloud.com/sentiment-2.0';
-$model = 'auto';
 $txt = '';
 
 //</editor-fold>
 
-$topics[0] = $topico[0];
 $accounts[0] = $user[0];
 $c = 0;
 
-if ($topics[0] != '') {
+if ($topico[0] != '') {
 
     for ($b = 0; $b < count($topics); $b++) {
+        //echo "https://api.twitter.com/1.1/search/tweets.json?q=" . $topics[$b] . "&count=" . $notweets."<br>";
         $tweetsSearch = $connection->get("https://api.twitter.com/1.1/search/tweets.json?q=" . $topics[$b] . "&count=" . $notweets);
         $phpArraySearch = json_decode($tweetsSearch, true);
         if (count($phpArraySearch['statuses']) == 0) {
@@ -209,7 +207,7 @@ if ($topics[0] != '') {
                 if ($phpArraySearch['statuses'][$a]['text'][0] == 'R' && $phpArraySearch['statuses'][$a]['text'][1] == 'T' && $phpArraySearch['statuses'][$a]['text'][2] == ' ') {
                     $rtImg = true;//Si es un re twitt sirve para calcular el del usuario que lo re twittero
                 }
-                if ($count <= 20) {
+                if ($count <= 10) {
                     $scoreKlout = $dbf->klout( $phpArraySearch['statuses'][$a]['user']['id']);
                 }
                 else {
@@ -220,7 +218,7 @@ if ($topics[0] != '') {
                 $count++;
                 if ($showSentiment) {
                     $txt = $phpArraySearch['statuses'][$a]['text'];
-                    $sentiment = $dbf->sentimentAnalysis($api,$model,$txt);
+                    $sentiment = $dbf->sentimentAnalysis($txt);
 
                 }
                 //<editor-fold desc="Clean text">
@@ -232,6 +230,7 @@ if ($topics[0] != '') {
                 //</editor-fold>
                 //Si es un RT se calcula el KLOUT de la persona que realizo el RT
                 if ($rtImg) {
+                    sleep(2);
                     $scoreKlout = $dbf->klout( $phpArraySearch['statuses'][$a]['user']['id'] );
                 }
 
@@ -271,7 +270,7 @@ if ($topics[0] != '') {
                 $arraySearch[$c]["sentiment"] = $sentiment;
                 //</editor-fold>
                 //$collection->insert($arraySearch[$c]);
-
+                /*
                 try {
                     if ($phpArraySearch['statuses'][$a]['id_str'] != null) {
                         //$collection->update($arraySearch[$c], array("upsert" => true));
@@ -282,6 +281,7 @@ if ($topics[0] != '') {
                 } catch (MongoWriteConcernException $e) {
                     //echo $e->getMessage(), "\n";
                 }
+                */
                 //array_push($post, $arraySearch);
                 $c++;
                 // $b++;
@@ -290,7 +290,7 @@ if ($topics[0] != '') {
     }
 
 
-    //echo json_encode($arraySearch);
+//echo json_encode($arraySearch);
 }
 else if ($accounts[0] != '') {
 
@@ -444,10 +444,8 @@ else if ($accounts[0] != '') {
                 $arraySearch[$c]["Klout"] = $scoreKlout;
                 $arraySearch[$c]["sentimiento"] = $sentiment;
                 //</editor-fold>
-                /*
                 $collection->insert($arraySearch[$c]);
                 array_push($post, $arraySearch);
-                */
                 $c++;
 
                 //$coll->insert($array);
@@ -460,7 +458,7 @@ else if ($accounts[0] != '') {
 
     }
 
-    echo json_encode($post);
+    //echo json_encode($post);
 
 
 } else {
@@ -468,4 +466,4 @@ else if ($accounts[0] != '') {
     json_encode($response);
 }
 
-$m->close();
+//$m->close();

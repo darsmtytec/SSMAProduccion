@@ -5,8 +5,8 @@
  * Date: 29/08/2015
  * Time: 03:17 PM
  */
-
-require_once $_SERVER['DOCUMENT_ROOT'].'/ssma/web_service/include/DB_Function.php';
+date_default_timezone_set("America/Monterrey");
+require_once '/opt/lampp/htdocs/ssma/web_service/include/DB_Function.php';
 $dbf = new DB_Function();
 $m = new MongoClient();
 $db = $m->selectDB("ssma");
@@ -78,9 +78,9 @@ if (isset($_POST["topic"][0]) && $_POST["topic"][0] != '') {
     $topico = $_POST["topic"];
 }
 else {
-    $topico[0] = 'tec de monterrey';
-/*
-    require_once $_SERVER['DOCUMENT_ROOT'].'/ssma/web_service/include/DB_Function.php';
+    //$topico[0] = 'tec de monterrey';
+
+    require_once '/opt/lampp/htdocs/ssma/web_service/include/DB_Function.php';
     $db = new DB_Function();
     $word = $db->getWords();
 
@@ -145,7 +145,7 @@ for ($b = 0; $b < count($topico); $b++) {
 
             $txt = $child['caption']['text'];
             //echo $children['caption']['text'];
-            $sentiment = $dbf->sentimentAnalysis($api, $model, $txt);
+            $sentiment = $dbf->sentimentAnalysis($txt);
         }
 
         $id = $child['id'];
