@@ -163,14 +163,7 @@ if ($user[0] != '') {
 //</editor-fold>
 
 //<editor-fold desc="Por palabra o Hashtag">
-if ($topico[0] != '') {
 
-    //$topic = $_POST["topic"];
-    foreach ($topico as $eachTopic) {
-        array_push($topics, $eachTopic);
-    }
-    var_dump($topics);
-}
 if ($word[0] != '') {
     //$word = $_POST["search"];
     foreach ($word as $eachWord) {
@@ -193,9 +186,10 @@ $c = 0;
 
 if ($topico[0] != '') {
 
-    for ($b = 0; $b < count($topics); $b++) {
-        //echo "https://api.twitter.com/1.1/search/tweets.json?q=" . $topics[$b] . "&count=" . $notweets."<br>";
-        $tweetsSearch = $connection->get("https://api.twitter.com/1.1/search/tweets.json?q=" . $topics[$b] . "&count=" . $notweets);
+    for ($b = 0; $b < count($topico); $b++) {
+
+        echo "https://api.twitter.com/1.1/search/tweets.json?q=" . $topico[$b] . "&count=" . $notweets."<br>";
+        $tweetsSearch = $connection->get("https://api.twitter.com/1.1/search/tweets.json?q=" . $topico[$b] . "&count=" . $notweets);
         $phpArraySearch = json_decode($tweetsSearch, true);
         if (count($phpArraySearch['statuses']) == 0) {
 
@@ -289,8 +283,7 @@ if ($topico[0] != '') {
         }
     }
 
-
-//echo json_encode($arraySearch);
+echo json_encode($arraySearch);
 }
 else if ($accounts[0] != '') {
 

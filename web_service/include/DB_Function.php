@@ -442,15 +442,14 @@ class DB_Function
         }
     }
 
-    public function getAll()
+    public function getAll($colName)
     {
         $m = new MongoClient();
 
         $db = $m->selectDB("ssma");
 
 
-        $inidate = new DateTime('2016-03-04');
-        $inidateStr = $inidate->format('dmy');
+
 
         $findate = new DateTime();
         $findate->add(new DateInterval('P1D'));
@@ -460,8 +459,10 @@ class DB_Function
         $a = 0;
         $arr = array();
         $arr[0] = array("id_post"=> '');
+        /*
         while ($inidateStr != $findate) {
             $colName = 'col' . $inidateStr;
+            */
             $collection = $db->selectCollection($colName);
 
             $cursor = $collection->find();
@@ -469,12 +470,12 @@ class DB_Function
 
             foreach ($cursor as $col) {
                 // if(isset()){ }else{ }
-                //var_dump($col["id_post"]);
+
                 if(isset($col["id_post"])){
                     $arr[$a]["id_post"] = $col["id_post"];
                 }
                 else{
-                    $arr[$a]["id_post"] = 'N/A';
+                    $arr[$a]["id_post"] = '';
 
                 }
                 if(isset($col["text_clean"])){
@@ -483,19 +484,26 @@ class DB_Function
 
                 if(isset($col["sentiment"])){
                     $arr[$a]["sentiment"] = $col["sentiment"];
-                }else{
+                }
+                else{
                     $arr[$a]["sentiment"] = "NONE";
                 }
+                if(isset($col["api"])){
+                    $arr[$a]["api"] = $col["api"];
 
-                $arr[$a]["api"] = $col["api"];
+                }
+                else{
+                    $arr[$a]["api"] = '';
+                }
                 $arr[$a]["collection"] = $colName;
-                //echo $a."<br>";
                 $a++;
             }
+            /*
             $inidate->add(new DateInterval('P1D'));
             $inidateStr = $inidate->format('dmy');
             //echo $inidateStr.' == '.$findate.'<br>';
         }
+        */
 
         $m->close();
         return $arr;
@@ -551,9 +559,12 @@ class DB_Function
         $key[8] = '518948a634b3328d2d4a745e86490cf7'; //darsmtytec1@gmail.com
         $key[9] = '9e1ae60da01ed968c04e7349ff7c2a30'; //ana.serna3@gmail.com
         $key[10] = 'b599d69e39814c89e29dea30fc4c1205'; //ssppaammeerr@hotmail.com
+        $key[11] = '97f0cf6598ef7d3caac616b35c92619c'; //darsmtytec@hotmail.com
+        $key[12] = '61ca5b0fe5b7bf20e8a3bca661f192b6'; //tecmtydars@gmail.com
+        $key[13] = '7ab9c55e1d6e7fb37cbf14a3e0790200'; //dsictec@zoho.com
 
 
-        $key[11] = ''; // Sacar del while
+        $key[14] = ''; // Sacar del while
         $model = 'auto'; //general_es general_en general_fr auto  // es-general/en-general/fr-general/en-reputation/es-reputation DEPRECATED
         $keyIndex = 0;
 
@@ -657,13 +668,11 @@ class DB_Function
 
     }
 
-    public function renewSentiment($id,$txt){
+    public function renewSentiment($id,$sentiment,$colName){
 
         $m = new MongoClient();
 
         $db = $m->selectDB("ssma");
-        $colName = date("dmy");
-        $colName = 'col'; //'100316'; //.;00316'; //.;
         $collection = $db->selectCollection($colName);
         $Query = array("id_post" => $id);
         $nuevosdatos = array('$set' => array("sentiment" => $sentiment));

@@ -51,7 +51,7 @@ $accounts[] = '';
 $post[] = '';
 $bol = true;
 $showSentiment = 'true';
-$notweets = 1; //cantidad de tweets a mostrar
+$notweets = 100; //cantidad de tweets a mostrar
 $sentiment = 'NONE';
 $mod = '';
 
@@ -163,13 +163,7 @@ if ($user[0] != '') {
 //</editor-fold>
 
 //<editor-fold desc="Por palabra o Hashtag">
-if ($topico[0] != '') {
 
-    //$topic = $_POST["topic"];
-    foreach ($topico as $eachTopic) {
-        //array_push($topics, $eachTopic);
-    }
-}
 if ($word[0] != '') {
     //$word = $_POST["search"];
     foreach ($word as $eachWord) {
@@ -191,10 +185,10 @@ $txt = '';
 $accounts[0] = $user[0];
 $c = 0;
 
-if ($topics[0] != '') {
+if ($topico[0] != '') {
 
-    for ($b = 0; $b < count($topics); $b++) {
-        $tweetsSearch = $connection->get("https://api.twitter.com/1.1/search/tweets.json?q=" . $topics[$b] . "&count=" . $notweets);
+    for ($b = 0; $b < count($topico); $b++) {
+        $tweetsSearch = $connection->get("https://api.twitter.com/1.1/search/tweets.json?q=" . $topico[$b] . "&count=" . $notweets);
         $phpArraySearch = json_decode($tweetsSearch, true);
         if (count($phpArraySearch['statuses']) == 0) {
 
