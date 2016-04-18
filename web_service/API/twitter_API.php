@@ -202,12 +202,12 @@ if ($topico[0] != '') {
                     $rtImg = true;//Si es un re twitt sirve para calcular el del usuario que lo re twittero
                 }
                 if ($count <= 10) {
-                    $scoreKlout = $dbf->klout( $phpArraySearch['statuses'][$a]['user']['id']);
+                   //$scoreKlout = $dbf->klout( $phpArraySearch['statuses'][$a]['user']['id']);
                 }
                 else {
-                    sleep(1.5);// esperar unos segundos y volver a realizar las peticiones
-                    $count = 0;
-                    $scoreKlout = $dbf->klout( $phpArraySearch['statuses'][$a]['user']['id']);
+                    //sleep(1.5);// esperar unos segundos y volver a realizar las peticiones
+                    //$count = 0;
+                    //$scoreKlout = $dbf->klout( $phpArraySearch['statuses'][$a]['user']['id']);
                 }
                 $count++;
                 if ($showSentiment) {
@@ -224,8 +224,8 @@ if ($topico[0] != '') {
             //</editor-fold>
             //Si es un RT se calcula el KLOUT de la persona que realizo el RT
             if ($rtImg) {
-                sleep(2);
-                $scoreKlout = $dbf->klout( $phpArraySearch['statuses'][$a]['user']['id'] );
+                //sleep(2);
+                //$scoreKlout = $dbf->klout( $phpArraySearch['statuses'][$a]['user']['id'] );
             }
 
             //<editor-fold desc="Arreglo con parametros">
@@ -259,7 +259,7 @@ if ($topico[0] != '') {
 
             }
             $arraySearch[$c]["api"] = 'twitter';
-            $arraySearch[$c]["Klout"] = $scoreKlout;
+            $arraySearch[$c]["Klout"] = 0;//$scoreKlout;
             $arraySearch[$c]["model"] = $mod;
             $arraySearch[$c]["sentiment"] = $sentiment;
             //</editor-fold>
