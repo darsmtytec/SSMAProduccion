@@ -7,12 +7,13 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
 
-<h4>Dashboard1</h4>
 <div class="col-md-6 col-sm-6">
-<div id="myfirstchart" style="height: 250px;"></div>
+    <h4>Indice Klout</h4>
+<div id="klout" style="height: 250px;"></div>
 </div>
 <div class="col-md-6 col-sm-6">
-    <div id="donut" style="height: 250px;"></div>
+    <h4>Sentimiento<h4>
+    <div id="sentiment" style="height: 250px;"></div>
 </div>
 
 

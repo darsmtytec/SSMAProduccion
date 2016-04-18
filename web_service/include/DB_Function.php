@@ -29,6 +29,28 @@ class DB_Function
 
     //</editor-fold>
 
+    /**
+     * @param $parents
+     * @param $searched
+     * @return bool|int|string
+     * Funcion que permite buscar en un arreglo de arreglos un valor dado @param $searched
+     */
+    public function multidimensional_search($parents, $searched) {
+        if (empty($searched) || empty($parents)) {
+            return false;
+        }
+
+        foreach ($parents as $key => $value) {
+            $exists = true;
+            foreach ($searched as $skey => $svalue) {
+                $exists = ($exists && IsSet($parents[$key][$skey]) && $parents[$key][$skey] == $svalue);
+            }
+            if($exists){ return $key; }
+        }
+
+        return false;
+    }
+
     //<editor-fold desc="User">
     public function getUser($user, $password)
     {
@@ -571,6 +593,7 @@ class DB_Function
         //</editor-fold>
 
         while ($boolean) {
+            sleep(1.5);
             $response = $dbf->sendPost($api, $key[$keyIndex], $model, $txt);
 
             $json = json_decode($response, true);
@@ -592,6 +615,7 @@ class DB_Function
                     while ($var) {
                         $keyIndex++;
                         // We make the request AGAIN WITH NEW KEY and parse the response to an array
+                        sleep(1.5);
                         $response = $dbf->sendPost($api, $key[$keyIndex], $model, $txt);
                         $json = json_decode($response, true);
                         //var_dump($json);
@@ -613,7 +637,8 @@ class DB_Function
                         //echo "<br>Sentiment Key ->>".$keyIndex."<br>";
 
                     }
-                } elseif ($json['status']['code'] == '100' || $json['status']['code'] == '202' || $json['status']['code'] == '203') {
+                }
+                elseif ($json['status']['code'] == '100' || $json['status']['code'] == '202' || $json['status']['code'] == '203') {
                     sleep(5);
                     //$sentiment = 'No disponible';
                 } //Contenido demasiado largo

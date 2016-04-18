@@ -8,7 +8,7 @@
 require_once '/opt/lampp/htdocs/ssma/web_service/include/DB_Function.php';
 $dbf = new DB_Function();
 
-$inidate = new DateTime('2016-03-04');
+$inidate = new DateTime('2016-04-14');
 $inidateStr = $inidate->format('dmy');
 
 $colName = 'col' . $inidateStr;
@@ -25,6 +25,12 @@ foreach ($data as $newData) {
 
         $renew = $dbf->renewSentiment($newData["id_post"],$sentiment,$newData["collection"]);
 
+        $c++;
+        if($c>30){
+            sleep(3);
+            $c=0;
+        }
+
 
         /*
            if($c>3){
@@ -38,7 +44,7 @@ foreach ($data as $newData) {
 
 
         */
-        $c++;
+
     }
 
 

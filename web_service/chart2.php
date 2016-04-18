@@ -9,7 +9,7 @@
 require_once $_SERVER['DOCUMENT_ROOT'].'/ssma/web_service/include/DB_Function.php';
 $dbf = new DB_Function();
 $chart = $dbf->getData('borrego','twitter','','');
-var_dump($chart);
+//var_dump($chart);
 
 
 $array = array("success" => 1, "error" => 0);
@@ -41,7 +41,7 @@ foreach($chart as $ch){
     else if ($ch["sentiment"]=="P+"){
         $array["sentiment"][1]["value"] = $array["sentiment"][1]["value"]+1;
     }
-    else if($ch["sentiment"]=="N" || $ch["sentimiento"]=="NEU"){
+    else if($ch["sentiment"]=="N" || $ch["sentiment"]=="NEU"){
         $array["sentiment"][2]["value"] = $array["sentiment"][2]["value"]+1;
     }
     else if($ch["sentiment"]=="N+"){

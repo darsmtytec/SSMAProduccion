@@ -5,6 +5,7 @@
  * Date: 28/08/2015
  * Time: 12:36 PM
  */
+
 header("Access-Control-Allow-Origin: *");
 date_default_timezone_set("America/Monterrey");
 require_once("twitteroauth.php");
@@ -74,7 +75,7 @@ else {
 
     $a = 0;
     foreach ($word as $palabra) {
-        $topics[$a] = $palabra["word"];
+        $topico[$a] = $palabra["word"];
         //echo $topico[$a];
         $a++;
     }
@@ -282,7 +283,7 @@ if ($topico[0] != '') {
 }
 
 
-//echo json_encode($arraySearch);
+echo json_encode($arraySearch);
 }
 else if ($accounts[0] != '') {
 
