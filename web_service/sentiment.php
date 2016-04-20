@@ -42,21 +42,32 @@ if($chart!='' || $chart!=null) {
 
     $array["sentiment"][4]["value"] = 0;
     $array["sentiment"][4]["label"] = "None";
-
+    $boolean = false;
     $k = 0;
     foreach ($chart as $ch) {
 
         if ($ch["sentiment"] == "P") {
             $array["sentiment"][0]["value"] = $array["sentiment"][0]["value"] + 1;
+                $boolean =true;
         } else if ($ch["sentiment"] == "P+") {
             $array["sentiment"][1]["value"] = $array["sentiment"][1]["value"] + 1;
+            $boolean =true;
         } else if ($ch["sentiment"] == "N" || $ch["sentiment"] == "NEU") {
             $array["sentiment"][2]["value"] = $array["sentiment"][2]["value"] + 1;
+            $boolean =true;
         } else if ($ch["sentiment"] == "N+") {
             $array["sentiment"][3]["value"] = $array["sentiment"][3]["value"] + 1;
+            $boolean =true;
         } else {
             $array["sentiment"][4]["value"] = $array["sentiment"][4]["value"] + 1;
+            $boolean =true;
         }
+    }
+
+    if(!$boolean){
+        $array["success"]=0;
+        $array["aerror"]=1;
+        $array["msg"]="No existen datos para mostar intentele de nuevo mas tarde";
     }
 
     echo json_encode($array);

@@ -15,6 +15,7 @@ class DB_Function
     // Constructor
     function __construct()
     {
+        date_default_timezone_set('America/Monterrey');
         require_once 'DB_Connect.php';
         // conexion de base de datos
         $this->db = new DB_Connect();
@@ -35,7 +36,8 @@ class DB_Function
      * @return bool|int|string
      * Funcion que permite buscar en un arreglo de arreglos un valor dado @param $searched
      */
-    public function multidimensional_search($parents, $searched) {
+    public function multidimensional_search($parents, $searched)
+    {
         if (empty($searched) || empty($parents)) {
             return false;
         }
@@ -45,7 +47,9 @@ class DB_Function
             foreach ($searched as $skey => $svalue) {
                 $exists = ($exists && IsSet($parents[$key][$skey]) && $parents[$key][$skey] == $svalue);
             }
-            if($exists){ return $key; }
+            if ($exists) {
+                return $key;
+            }
         }
 
         return false;
@@ -328,8 +332,8 @@ class DB_Function
                 } else {
                     $arr[$a]["text_clean"] = "";
                 }
-                if (isset($col["created_at"]) &&$col["created_at"] != '') {
-                  //  $arr[$a]["created_at"] = date_format(date_create($col["created_at"]), "d/m/Y");
+                if (isset($col["created_at"]) && $col["created_at"] != '') {
+                    //  $arr[$a]["created_at"] = date_format(date_create($col["created_at"]), "d/m/Y");
                 } else {
                     $arr[$a]["created_at"] = "";
                 }
@@ -471,8 +475,6 @@ class DB_Function
         $db = $m->selectDB("ssma");
 
 
-
-
         $findate = new DateTime();
         $findate->add(new DateInterval('P1D'));
         $findate = $findate->format('dmy');
@@ -480,60 +482,57 @@ class DB_Function
 
         $a = 0;
         $arr = array();
-        $arr[0] = array("id_post"=> '');
+        $arr[0] = array("id_post" => '');
         /*
         while ($inidateStr != $findate) {
             $colName = 'col' . $inidateStr;
             */
-            $collection = $db->selectCollection($colName);
+        $collection = $db->selectCollection($colName);
 
-            $cursor = $collection->find();
+        $cursor = $collection->find();
 
 
-            foreach ($cursor as $col) {
-                // if(isset()){ }else{ }
+        foreach ($cursor as $col) {
+            // if(isset()){ }else{ }
 
-                if(isset($col["id_post"])){
-                    $arr[$a]["id_post"] = $col["id_post"];
-                }
-                else{
-                    $arr[$a]["id_post"] = '';
+            if (isset($col["id_post"])) {
+                $arr[$a]["id_post"] = $col["id_post"];
+            } else {
+                $arr[$a]["id_post"] = '';
 
-                }
-                if(isset($col["text_clean"])){
-                    $arr[$a]["text_clean"] = $col["text_clean"];
-                }
-
-                if(isset($col["sentiment"])){
-                    $arr[$a]["sentiment"] = $col["sentiment"];
-                }
-                else{
-                    $arr[$a]["sentiment"] = "NONE";
-                }
-                if(isset($col["api"])){
-                    $arr[$a]["api"] = $col["api"];
-
-                }
-                else{
-                    $arr[$a]["api"] = '';
-                }
-                $arr[$a]["collection"] = $colName;
-                $a++;
             }
-            /*
-            $inidate->add(new DateInterval('P1D'));
-            $inidateStr = $inidate->format('dmy');
-            //echo $inidateStr.' == '.$findate.'<br>';
+            if (isset($col["text_clean"])) {
+                $arr[$a]["text_clean"] = $col["text_clean"];
+            }
+
+            if (isset($col["sentiment"])) {
+                $arr[$a]["sentiment"] = $col["sentiment"];
+            } else {
+                $arr[$a]["sentiment"] = "NONE";
+            }
+            if (isset($col["api"])) {
+                $arr[$a]["api"] = $col["api"];
+
+            } else {
+                $arr[$a]["api"] = '';
+            }
+            $arr[$a]["collection"] = $colName;
+            $a++;
         }
-        */
+        /*
+        $inidate->add(new DateInterval('P1D'));
+        $inidateStr = $inidate->format('dmy');
+        //echo $inidateStr.' == '.$findate.'<br>';
+    }
+    */
 
         $m->close();
         return $arr;
 
     }
 
-    public function getCountPost( $idate, $fdate){
-
+    public function getCountPost($word,$idate, $fdate,$typedate)
+    {
 
 
         $m = new MongoClient();
@@ -546,6 +545,7 @@ class DB_Function
             $inidateStr = $inidate->format('dmy');
         } else {
             $inidate = new DateTime('2016-03-04');
+            $ini = $inidate->format($typedate);
             $inidateStr = $inidate->format('dmy');
         }
 
@@ -564,8 +564,18 @@ class DB_Function
         $arr1 = array();
         //SELECT COUNT(*y) FROM users where AGE > 30	$db->users->find(array("age" => array('$gt' => 30)))->count();
         //array("age" => array('$exists' => true))
-        $query1 = array('api'=>'twitter');
-        $query2 = array('api'=>'instagram');
+        if($word!=''){
+            $query1 = array('api' => 'twitter',"text_clean" =>$word);
+            $query2 = array('api' => 'instagram',"text_clean" =>$word);
+            $query3 = array('api' => 'reddit',"text_clean" =>$word);
+            $query4 = array('api' => 'tumblr',"text_clean" =>$word);
+        }else{
+            $query1 = array('api' => 'twitter');
+            $query2 = array('api' => 'instagram');
+            $query3 = array('api' => 'reddit');
+            $query4 = array('api' => 'tumblr');
+        }
+
 
         while ($inidateStr != $findate) {
             $colName = 'col' . $inidateStr;
@@ -573,13 +583,18 @@ class DB_Function
 
             $twitter = $collection->find($query1)->count();
             $instagram = $collection->find($query2)->count();
+            $reddit = $collection->find($query3)->count();
+            $tumblr = $collection->find($query4)->count();
 
-            $arr1[$a]["twitter"]=$twitter;
-            $arr1[$a]["instagram"]=$instagram;
-            $arr1[$a]["date"]=$inidateStr;
+            $arr1[$a]["twitter"] = $twitter;
+            $arr1[$a]["instagram"] = $instagram;
+            $arr1[$a]["reddit"] = $reddit;
+            $arr1[$a]["tumblr"] = $tumblr;
+            $arr1[$a]["date"] = $ini;
 
             //echo "el numero de post en ".$colName." es de ".$cursor."<br>";
             $inidate->add(new DateInterval('P1D'));
+            $ini = $inidate->format($typedate);
             $inidateStr = $inidate->format('dmy');
             //echo $inidateStr.' == '.$findate.'<br>';
             $a++;
@@ -587,7 +602,6 @@ class DB_Function
 
         $m->close();
         return $arr1;
-
 
 
     }
@@ -696,8 +710,7 @@ class DB_Function
                         //echo "<br>Sentiment Key ->>".$keyIndex."<br>";
 
                     }
-                }
-                elseif ($json['status']['code'] == '100' || $json['status']['code'] == '202' || $json['status']['code'] == '203') {
+                } elseif ($json['status']['code'] == '100' || $json['status']['code'] == '202' || $json['status']['code'] == '203') {
                     sleep(5);
                     //$sentiment = 'No disponible';
                 } //Contenido demasiado largo
@@ -752,7 +765,8 @@ class DB_Function
 
     }
 
-    public function renewSentiment($id,$sentiment,$colName){
+    public function renewSentiment($id, $sentiment, $colName)
+    {
 
         $m = new MongoClient();
 

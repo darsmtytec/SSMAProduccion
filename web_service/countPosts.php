@@ -9,9 +9,20 @@ require_once $_SERVER['DOCUMENT_ROOT'] . '/ssma/web_service/include/DB_Function.
 $dbf = new DB_Function();
 $response = array("success" => 1, "error" => 0);
 
+$word = '';
+$typedate = '';
+if (isset($_POST['word']) && $_POST['word'] != '') {
+    $search = $_POST['word'];
+}
+if (isset($_POST['typeDate']) && $_POST['typeDate'] != '') {
+    $typedate = $_POST['typeDate'];
+}
+
 $idate = '';
 $fdate = '';
-$count = $dbf->getCountPost($idate,$fdate);
+$word = '';
+$typedate = 'dmy';
+$count = $dbf->getCountPost($word,$idate,$fdate,$typedate);
 $response["post"]=$count;
 
 echo json_encode($response);
