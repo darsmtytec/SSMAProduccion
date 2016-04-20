@@ -1,20 +1,14 @@
-
-
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.css">
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/morris.js/0.5.1/morris.min.js"></script>
+    <title>Chart.js Live Update Example</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.0/jquery.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.js"></script>
+    <script type="text/javascript" charset="utf-8">
+        
+    </script>
 </head>
-
-
-
-<div id="myfirstchart" style="height: 250px;"></div>
-
-
-<script src="chart.js"></script>
+<body>
+<canvas id="chart" width="300" height="300"></canvas>
+</body>
 </html>
-

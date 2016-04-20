@@ -1,36 +1,37 @@
-/**
- * Created by L03037373 on 30/03/2016.
- */
+$(document).ready(function() {
+
+    var max_value = 60
+
+    chartOptions = {
+        segmentShowStroke: false,
+        percentageInnerCutout: 75,
+        animation: false
+    };
+
+    chartData = [{
+        value: 0,
+        color: '#4FD134'
+    },{
+        value: max_value,
+        color: '#DDDDDD'
+    }];
+
+    var ctx = $('#chart').get(0).getContext("2d");
+    var theChart = new Chart(ctx).Doughnut(chartData,chartOptions);
+
+    theInterval = setInterval(function(){
+        if (theChart.segments[0].value == max_value) {
+            clearInterval(theInterval);
+        } else {
+            theChart.segments[0].value = theChart.segments[0].value+1
+            theChart.segments[1].value = theChart.segments[1].value-1
+            theChart.update()
+        }
+    }, 10);
 
 
+setInterval(function () {
 
 
-$.post("/ssma/web_service/chart.php", function (data) {
-    },
-    "json").done(function (data) {
-    var klout;
-    console.log(data.length);
-    var array = [];
-    for (i = 0; i < data.length; i++) {
-
-        array = data[i];
-
-
-        console.log(array);
-
-
-    }
-    Morris.Line({
-        element: 'myfirstchart',
-        data: array,
-        xkey: 'y',
-        ykeys: ['a', 'b'],
-        labels: ['Series A', 'Series B']
-    });
-
-}).fail(function (data) {
-    console.log(data);
-
+},1000);
 });
-
-

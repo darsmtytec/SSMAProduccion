@@ -6,8 +6,8 @@ twt = fb = inst = tmblr = lkin = blgr = rd = yt = pint = gg = true;
 var numResults = 30;
 var dataArray;
 $(document).ready(function(){
-    $('.page-title').html('<h1>Hist�rico</h1>');
-    $('#page-breadcrumb').text('Hist�rico');
+    $('.page-title').html('<h1>Historico</h1>');
+    $('#page-breadcrumb').text('Historico');
     $('#menu-historico').addClass('active');
     array = [];
 
@@ -46,7 +46,7 @@ $("#searchbtn").click(function(){
             }
 
             dataArray = data;
-            renderResults(data, 0, numResults);
+            renderResults(data, 0, numResults, 0);
 
             $("#divResults").css('display','block');
             $("#arrayExport").val(data);
@@ -201,18 +201,15 @@ function selectSocial(){
 
 function loadResults(page){
 
-    var listItems = $("#listPag li");
-    a = 0;
-    listItems.each(function(li) {
-        $("#"+a).removeClass('page-active').addClass('page-inactive');
-        a++;
-    });
-    console.log(page);
-    $("#"+page).removeClass('page-inactive').addClass('page-active');
-    renderResults(dataArray, page*numResults, (page + 1) * numResults);
+    /*var listItems = $("#listPag").children();
+    console.log(listItems.length);
+    for(a=0; a< listItems.length; a++){
+        $("#pag_" + a).removeClass();
+    }*/
+    renderResults(dataArray, page*numResults, (page + 1) * numResults, page);
 }
 
-function renderResults(data, init, end){
+function renderResults(data, init, end, page){
     console.log("tamaño-> "+data.length);
 
     if(data.length > numResults){
@@ -227,22 +224,23 @@ function renderResults(data, init, end){
     }
 
     // Limpiar la paginaci�n previa
-    var pagBase = $("#listPag #0").detach();
+    var pagBase = $("#listPag #pag_0").detach();
     $('#listPag').empty().append(pagBase);
 
     // Generar los botones de paginaci�n.
     var showResults = numResults;
     var b = 1;
+    $("#pag_0").attr('class', "page-inactive");
     while(showResults < data.length){
-        var cloneBtn = $("#0").clone().removeAttr('id').css('display','inline').show();
-        cloneBtn.attr('id', b);
+        var cloneBtn = $("#pag_0").clone().removeAttr('id').css('display','inline').show();
+        cloneBtn.attr('id', 'pag_'+b);
         cloneBtn.attr('class', "page-inactive");
         cloneBtn.html('<a href="javascript:loadResults('+b+');" > ' + b + ' </a>');
         $('#listPag').append(cloneBtn).show();
         b++;
         showResults = showResults + numResults;
     }
-
+    $("#pag_" + page).attr('class', "page-active");
     // Limpiar pagina de resultados previos
     var save0 = $('#listRow #baseRow').detach();
     $('#listRow').empty().append(save0);
@@ -261,11 +259,11 @@ function renderResults(data, init, end){
         if(data[i]['api'] == 'twitter'){
             cloneTR.find('#urlpic').attr('href', 'https://twitter.com/' + data[i]['screen_name']);
             if(data[i]['id_tweet'] != '' && data[i]['id_tweet'] != null && data[i]['id_tweet'] != 'null'){
-                cloneTR.find('#iconPost').html('<a href="https://twitter.com/' + data[i]['screen_name'] + '/status/' + data[i]['id_tweet'] + '" target="_blank"><img src="historico/twitter.png" width=30/></a><br><img src="historico/klout.png" width=35/>' + data[i]['Klout']);
+                cloneTR.find('#iconPost').html('<a href="https://twitter.com/' + data[i]['screen_name'] + '/status/' + data[i]['id_tweet'] + '" target="_blank"><img src="historico/twitter.png" width=30/></a>');
                 cloneTR.find('#sentimentEdit').attr('href','javascript:changeSentiment("'+ data[i]['id_tweet'] +'","'+ data[i]['sentiment'] +'");');
                 cloneTR.find('#refreshPic').attr('href','javascript:refreshPic("'+ data[i]['id_tweet'] +'","'+ data[i]['screen_name'] +'","twitter");');
             }else if(data[i]['id_post'] != '' && data[i]['id_post'] != null && data[i]['id_post'] != 'null'){
-                cloneTR.find('#iconPost').html('<a href="https://twitter.com/' + data[i]['screen_name'] + '/status/' + data[i]['id_post'] + '" target="_blank"><img src="historico/twitter.png" width=30/></a><br><img src="historico/klout.png" width=35/>' + data[i]['Klout']);
+                cloneTR.find('#iconPost').html('<a href="https://twitter.com/' + data[i]['screen_name'] + '/status/' + data[i]['id_post'] + '" target="_blank"><img src="historico/twitter.png" width=30/></a>');
                 cloneTR.find('#sentimentEdit').attr('href','javascript:changeSentiment("'+ data[i]['id_post'] +'","'+ data[i]['sentiment'] +'");');
                 cloneTR.find('#refreshPic').attr('href','javascript:refreshPic("'+ data[i]['id_post'] +'","'+ data[i]['screen_name'] +'","twitter");');
             }else{

@@ -532,6 +532,65 @@ class DB_Function
 
     }
 
+    public function getCountPost( $idate, $fdate){
+
+
+
+        $m = new MongoClient();
+
+        $db = $m->selectDB("ssma");
+
+        if ($idate != '') {
+            $inidate = $idate;
+            $inidate = new DateTime($inidate);
+            $inidateStr = $inidate->format('dmy');
+        } else {
+            $inidate = new DateTime('2016-03-04');
+            $inidateStr = $inidate->format('dmy');
+        }
+
+        if ($fdate != '') {
+            $findate = new DateTime($fdate);
+            $findate->add(new DateInterval('P1D'));
+
+            $findate = $findate->format('dmy');
+        } else {
+            $findate = new DateTime();
+            $findate->add(new DateInterval('P1D'));
+            $findate = $findate->format('dmy');
+        }
+
+        $a = 0;
+        $arr1 = array();
+        //SELECT COUNT(*y) FROM users where AGE > 30	$db->users->find(array("age" => array('$gt' => 30)))->count();
+        //array("age" => array('$exists' => true))
+        $query1 = array('api'=>'twitter');
+        $query2 = array('api'=>'instagram');
+
+        while ($inidateStr != $findate) {
+            $colName = 'col' . $inidateStr;
+            $collection = $db->selectCollection($colName);
+
+            $twitter = $collection->find($query1)->count();
+            $instagram = $collection->find($query2)->count();
+
+            $arr1[$a]["twitter"]=$twitter;
+            $arr1[$a]["instagram"]=$instagram;
+            $arr1[$a]["date"]=$inidateStr;
+
+            //echo "el numero de post en ".$colName." es de ".$cursor."<br>";
+            $inidate->add(new DateInterval('P1D'));
+            $inidateStr = $inidate->format('dmy');
+            //echo $inidateStr.' == '.$findate.'<br>';
+            $a++;
+        }
+
+        $m->close();
+        return $arr1;
+
+
+
+    }
     //</editor-fold>
 
     //<editor-fold desc="Sentiment">

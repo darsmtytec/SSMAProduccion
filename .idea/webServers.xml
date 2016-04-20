@@ -3,7 +3,7 @@
   <component name="WebServers">
     <option name="servers">
       <webServer id="7232b5e9-512e-4cb1-bf73-ee5943e14ed8" name="Desarrollo" url="http://10.2.27.52">
-        <fileTransfer host="10.2.27.52" port="22" rootFolder="/opt/lampp/htdocs/ssma" accessType="SFTP" username="dars">
+        <fileTransfer host="10.2.27.52" port="22" rootFolder="/opt/lampp/htdocs/ssma" accessType="SFTP" password="dff8dfcfdfcedfcfdfd9dff9dfc5dfc9dfc3dfcbdfc6dfcfdfd9" username="dars">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" />
           </advancedOptions>

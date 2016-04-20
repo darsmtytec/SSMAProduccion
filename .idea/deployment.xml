@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="On explicit save action" serverName="Desarrollo" promptOnLocalOverwrite="false" uploadOnCheckin="98169d79-4e70-4f92-995b-ac9b0892c8d2">
+  <component name="PublishConfigData" autoUpload="On explicit save action" serverName="Desarrollo" promptOnLocalOverwrite="false">
     <serverData>
       <paths name="Desarrollo">
         <serverdata>
@@ -17,7 +17,6 @@
         </serverdata>
       </paths>
     </serverData>
-    <option name="myUploadOnCheckinName" value="Serv DARS" />
     <option name="myAutoUpload" value="ON_EXPLICIT_SAVE" />
   </component>
 </project>
