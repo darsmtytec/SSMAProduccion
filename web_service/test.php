@@ -1,132 +1,92 @@
-<!DOCTYPE html>
-<html>
-<head>
+<?php
+/**
+ * Tag cloud demo based on word frequency
+ * @author: unknown
+ * @since: 2007-02-27
+ */
 
-</head>
-<style>
-    body
+// Store frequency of words in an array
+$freqData = array();
+
+// Random words
+$lorem = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+Phasellus vestibulum ullamcorper tortor. Aenean quis lacus quis neque
+adipiscing ultricies. Pellentesque tincidunt ligula vitae nibh ornare
+pharetra. Proin dignissim tortor. Donec et ipsum nec tellus gravida
+tempor. Aliquam ullamcorper purus vel felis. Praesent faucibus.
+Curabitur porta. Nulla in lorem quis mi lacinia fringilla. Integer
+adipiscing mi quis felis. Pellentesque habitant morbi tristique senectus
+et netus et malesuada fames ac turpis egestas. Quisque sagittis ante in
+arcu. Sed libero enim, venenatis sit amet, vestibulum at, porttitor id,
+neque. Vestibulum ornare semper erat. Sed tincidunt nibh et massa. Cras
+sed diam. Quisque blandit enim.
+ 
+ 
+Sed nonummy. Aenean mollis turpis quis enim. Nam massa nulla, varius
+molestie, aliquet et, feugiat eget, nisi. Sed mollis, leo ut pretium
+placerat, nibh turpis egestas ipsum, sed aliquam neque enim in risus.
+Nullam nisl. Sed tincidunt leo quis tellus. Mauris non lorem. Aenean
+tristique justo at arcu. Fusce et lorem. Nam sodales. Mauris condimentum
+diam. Nam commodo. Cum sociis natoque penatibus et magnis dis parturient
+montes, nascetur ridiculus mus. Cras ac risus. Proin et dolor laoreet mi
+gravida sodales. Duis bibendum, ipsum posuere egestas posuere, dui lacus
+feugiat turpis, id tincidunt urna est sit amet est. Cras eu sem.
+";
+
+// Get individual words and build a frequency table
+foreach( str_word_count( $lorem, 1 ) as $word )
+{
+    // For each word found in the frequency table, increment its value by one
+    array_key_exists( $word, $freqData ) ? $freqData[ $word ]++ : $freqData[ $word ] = 0;
+}
+
+// ==============================================================
+// = Function to actually generate the cloud from provided data =
+// ==============================================================
+function getCloud( $data = array(), $minFontSize = 12, $maxFontSize = 30 )
+{
+    $minimumCount = min( array_values( $data ) );
+    $maximumCount = max( array_values( $data ) );
+    $spread       = $maximumCount - $minimumCount;
+    $cloudHTML    = '';
+    $cloudTags    = array();
+
+    $spread == 0 && $spread = 1;
+
+    foreach( $data as $tag => $count )
     {
-        font-size:12px;
-        color:#000000;
-        background-color:#ffffff;
-        font-family:verdana,helvetica,arial,sans-serif;
+        $size = $minFontSize + ( $count - $minimumCount )
+            * ( $maxFontSize - $minFontSize ) / $spread;
+        $cloudTags[] = '<a style="font-size: ' . floor( $size ) . 'px'
+            . '" class="tag_cloud" href="http://www.google.com/search?q=' . $tag
+            . '" title="\'' . $tag  . '\' returned a count of ' . $count . '">'
+            . htmlspecialchars( stripslashes( $tag ) ) . '</a>';
     }
-</style>
+
+    return join( "\n", $cloudTags ) . "\n";
+}
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Tag Cloud Demo</title>
+    <style type="text/css" media="screen">
+        /*<![CDATA[*/
+        .tag_cloud { padding: 3px; text-decoration: none; }
+        .tag_cloud:link  { color: #81d601; }
+        .tag_cloud:visited { color: #019c05; }
+        .tag_cloud:hover { color: #ffffff; background: #69da03; }
+        .tag_cloud:active { color: #ffffff; background: #ACFC65; }
+        /*]]>*/
+    </style>
+</head>
+
 <body>
-
-<script src="http://www.amcharts.com/lib/amcharts.js" type="text/javascript"></script>
-<script>
-    var chart;
-    var chartData = [];
-    var chartCursor;
-    var day = 0;
-    var firstDate = new Date();
-    firstDate.setDate(firstDate.getDate() - 500);
-
-    // generate some random data, quite different range
-    function generateChartData() {
-        for (day = 0; day < 50; day++) {
-            var newDate = new Date(firstDate);
-            newDate.setDate(newDate.getDate() + day);
-
-            var visits = Math.round(Math.random() * 40) - 20;
-
-            chartData.push({
-                date: newDate,
-                visits: visits
-            });
-        }
-    }
-
-    // create chart
-    AmCharts.ready(function() {
-        // generate some data first
-        generateChartData();
-
-        // SERIAL CHART
-        chart = new AmCharts.AmSerialChart();
-        chart.pathToImages = "http://www.amcharts.com/lib/images/";
-        chart.marginTop = 0;
-        chart.marginRight = 10;
-        chart.autoMarginOffset = 5;
-        chart.zoomOutButton = {
-            backgroundColor: '#000000',
-            backgroundAlpha: 0.15
-        };
-        chart.dataProvider = chartData;
-        chart.categoryField = "date";
-
-        // AXES
-        // category
-        var categoryAxis = chart.categoryAxis;
-        categoryAxis.parseDates = true; // as our data is date-based, we set parseDates to true
-        categoryAxis.minPeriod = "DD"; // our data is daily, so we set minPeriod to DD
-        categoryAxis.dashLength = 1;
-        categoryAxis.gridAlpha = 0.15;
-        categoryAxis.axisColor = "#DADADA";
-
-        // value
-        var valueAxis = new AmCharts.ValueAxis();
-        valueAxis.axisAlpha = 0.2;
-        valueAxis.dashLength = 1;
-        chart.addValueAxis(valueAxis);
-
-        // GRAPH
-        var graph = new AmCharts.AmGraph();
-        graph.title = "red line";
-        graph.valueField = "visits";
-        graph.bullet = "round";
-        graph.bulletBorderColor = "#FFFFFF";
-        graph.bulletBorderThickness = 2;
-        graph.lineThickness = 2;
-        graph.lineColor = "#b5030d";
-        graph.negativeLineColor = "#0352b5";
-        graph.hideBulletsCount = 50; // this makes the chart to hide bullets when there are more than 50 series in selection
-        chart.addGraph(graph);
-
-        // CURSOR
-        chartCursor = new AmCharts.ChartCursor();
-        chartCursor.cursorPosition = "mouse";
-        chart.addChartCursor(chartCursor);
-
-        // SCROLLBAR
-        var chartScrollbar = new AmCharts.ChartScrollbar();
-        chartScrollbar.graph = graph;
-        chartScrollbar.scrollbarHeight = 40;
-        chartScrollbar.color = "#FFFFFF";
-        chartScrollbar.autoGridCount = true;
-        chart.addChartScrollbar(chartScrollbar);
-
-        // WRITE
-        chart.write("chartdiv");
-
-        // set up the chart to update every second
-        setInterval(function () {
-            // normally you would load new datapoints here,
-            // but we will just generate some random values
-            // and remove the value from the beginning so that
-            // we get nice sliding graph feeling
-
-            // remove datapoint from the beginning
-            chart.dataProvider.shift();
-
-            // add new one at the end
-            day++;
-            var newDate = new Date(firstDate);
-            newDate.setDate(newDate.getDate() + day);
-            var visits = Math.round(Math.random() * 40) - 20;
-            chart.dataProvider.push({
-                date: newDate,
-                visits: visits
-            });
-            chart.validateData();
-        }, 1000000);
-    });
-
-
-
-</script>
-
-
-<div id="chartdiv" style="width: 100%; height: 340px;"></div></body>
+<h1>Sample Tag Cloud</h1>
+<div id="wrapper">
+    <?php echo getCloud( $freqData ) ?>
+</div>
+</body>
 </html>

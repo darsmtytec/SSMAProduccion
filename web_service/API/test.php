@@ -5,18 +5,19 @@
  * Date: 28/08/2015
  * Time: 12:36 PM
  */
+
 header("Access-Control-Allow-Origin: *");
 date_default_timezone_set("America/Monterrey");
 require_once("twitteroauth.php");
 require_once '/opt/lampp/htdocs/ssma/web_service/include/DB_Function.php';
 $dbf = new DB_Function();
-/*
+
 $m = new MongoClient();
 $db = $m->selectDB("ssma");
 $colName = date("dmy");
-$colName = 'col'. $colName;
+$colName = 'col' . $colName;
 $collection = $db->selectCollection($colName);
-*/
+
 //<editor-fold desc="Remove accents">
 /**
  * Replace accented characters with non accented
@@ -49,9 +50,10 @@ $api = '';
 $topics[] = '';
 $accounts[] = '';
 $post[] = '';
+$index = 0;
 $bol = true;
-$showSentiment = 'true';
-$notweets = 1; //cantidad de tweets a mostrar
+$showSentiment = 'false';
+$notweets = 3;//cantidad de tweets a mostrar
 $sentiment = 'NONE';
 $mod = '';
 
@@ -63,10 +65,12 @@ if (isset($_POST["user"][0]) && $_POST["user"][0] != '') {
 }
 if (isset($_POST["topic"][0]) && $_POST["topic"][0] != '') {
     $topico = $_POST["topic"];
-}
-else {
+    echo $topico;
+} else {
+    $notweets = 1;
 
-    //$topico[0] = 'tec de monterrey';
+    $topico[0] = 'tec de monterrey';
+    /*
     require_once '/opt/lampp/htdocs/ssma/web_service/include/DB_Function.php';
     $db = new DB_Function();
 
@@ -75,7 +79,7 @@ else {
     $a = 0;
     foreach ($word as $palabra) {
         $topico[$a] = $palabra["word"];
-        //echo $topics[$a]."<br>";
+        //echo $topico[$a];
         $a++;
     }
     /*
@@ -181,19 +185,16 @@ $txt = '';
 
 //</editor-fold>
 
+//$topics[0] = $topico[0];
 $accounts[0] = $user[0];
 $c = 0;
 
 if ($topico[0] != '') {
 
     for ($b = 0; $b < count($topico); $b++) {
-
-        echo "https://api.twitter.com/1.1/search/tweets.json?q=" . $topico[$b] . "&count=" . $notweets."<br>";
         $tweetsSearch = $connection->get("https://api.twitter.com/1.1/search/tweets.json?q=" . $topico[$b] . "&count=" . $notweets);
         $phpArraySearch = json_decode($tweetsSearch, true);
-        if (count($phpArraySearch['statuses']) == 0) {
 
-        }
         $count = 0;
         for ($a = 0; $a < count($phpArraySearch['statuses']); $a++) {
             if ($phpArraySearch['statuses'] != null && $phpArraySearch['statuses'][$a] != null && $phpArraySearch['statuses'][$a]['id_str'] != '') {
@@ -202,17 +203,21 @@ if ($topico[0] != '') {
                     $rtImg = true;//Si es un re twitt sirve para calcular el del usuario que lo re twittero
                 }
                 if ($count <= 10) {
-                    $scoreKlout = $dbf->klout( $phpArraySearch['statuses'][$a]['user']['id']);
+                    $scoreKlout = $dbf->klout2($phpArraySearch['statuses'][$a]['user']['id'], $index);
+                } else {
+                    sleep(.5);// esperar unos segundos y volver a realizar las peticiones
+                    //$count = 0;
+                    $scoreKlout = $dbf->klout2($phpArraySearch['statuses'][$a]['user']['id'], $index);
                 }
-                else {
-                    sleep(1.5);// esperar unos segundos y volver a realizar las peticiones
-                    $count = 0;
-                    $scoreKlout = $dbf->klout( $phpArraySearch['statuses'][$a]['user']['id']);
+                //Aumento en 1 la llave del Klout para no hacer llamadas con la misma llave en cada iteracion
+                $index++;
+                if ($index > 3) {
+                    $index = 0;
                 }
                 $count++;
                 if ($showSentiment) {
                     $txt = $phpArraySearch['statuses'][$a]['text'];
-                    $sentiment = $dbf->sentimentAnalysis($txt);
+                    //$sentiment = $dbf->sentimentAnalysis($txt);
 
                 }
                 //<editor-fold desc="Clean text">
@@ -224,8 +229,8 @@ if ($topico[0] != '') {
                 //</editor-fold>
                 //Si es un RT se calcula el KLOUT de la persona que realizo el RT
                 if ($rtImg) {
-                    sleep(2);
-                    $scoreKlout = $dbf->klout( $phpArraySearch['statuses'][$a]['user']['id'] );
+                    //sleep(2);
+                    //$scoreKlout = $dbf->klout( $phpArraySearch['statuses'][$a]['user']['id'] );
                 }
 
                 //<editor-fold desc="Arreglo con parametros">
@@ -264,28 +269,22 @@ if ($topico[0] != '') {
                 $arraySearch[$c]["sentiment"] = $sentiment;
                 //</editor-fold>
                 //$collection->insert($arraySearch[$c]);
-                /*
-                try {
-                    if ($phpArraySearch['statuses'][$a]['id_str'] != null) {
-                        //$collection->update($arraySearch[$c], array("upsert" => true));
-                        $collection->insert($arraySearch[$c]);
-                        $collection->ensureIndex(array('id_post' => 1), array('unique' => 1, 'dropDups' => 1));
-                    }
 
+                try {
+                    $collection->insert($arraySearch[$c]);
+                    $collection->ensureIndex(array('id_post' => 1), array('unique' => 1, 'dropDups' => 1));
                 } catch (MongoWriteConcernException $e) {
                     //echo $e->getMessage(), "\n";
                 }
-                */
-                //array_push($post, $arraySearch);
                 $c++;
                 // $b++;
             }
         }
     }
 
-echo json_encode($arraySearch);
-}
-else if ($accounts[0] != '') {
+
+    echo json_encode($arraySearch);
+} else if ($accounts[0] != '') {
 
     for ($c = 0; $c < count($accounts); $c++) {
         $tweetsAccount = $connection->get("https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=" . $accounts[$c] . "&count=" . $notweets);
@@ -459,4 +458,4 @@ else if ($accounts[0] != '') {
     json_encode($response);
 }
 
-//$m->close();
+$m->close();

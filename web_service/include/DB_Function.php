@@ -234,24 +234,27 @@ class DB_Function
     {
         $t = false;
         $i = false;
+        $apiStr = '';
         // si encuentra la i en el post con los valores enviados de redes a buscar
         $pos = strpos($apis, 't');
         if ($pos !== false) {
-            $array['api'] = 'twitter';
+            $apiStr = 'twitter';
             $t = true;
         }
 
         $pos = strpos($apis, 'i');
         if ($pos !== false) {
-            $array['api'] = 'instagram';
+            $apiStr = 'instagram';
             $i = true;
         }
-        $Query = array('$and' => array(array("text_clean" => array('$regex' => $word)), $array));
+        $Query = array('$and' => array(array("text_clean" => array('$regex' => $word, '$options' => 'i')), array('api' => $apiStr)));
+
         // Si solo llegó una red social así se genera el query...si son más de dos redes, determinar la mejor manera de construir el array del OR
-        if ($t && $i) {
+        if (($t && $i) or (!$t && !$i)) {
             // $Query = array('$and' => array(array("text_clean" => array('$regex' => $word)), array('$or'=> array(array('api'=>'twitter'),array('api'=>'instagram')))));
-            $Query = array("text_clean" => array('$regex' => $word));
+            $Query = array("text_clean" => array('$regex' => $word, '$options' => 'i'));
         }
+
 
         $m = new MongoClient();
 
@@ -328,14 +331,20 @@ class DB_Function
                     $arr[$a]["Klout"] = "";
                 }
                 if (isset($col["text_clean"])) {
-                    $arr[$a]["text_clean"] = $col["text_clean"];
+
+                    //$arr[$a]["text_clean"] = $col["text_clean"];
+                    $arr[$a]["text_clean"] = preg_replace("/($word)/i", "<span style='background:#fff2a8;'>$1</span>", $col["text_clean"]);
                 } else {
                     $arr[$a]["text_clean"] = "";
                 }
-                if (isset($col["created_at"]) && $col["created_at"] != '') {
-                    //  $arr[$a]["created_at"] = date_format(date_create($col["created_at"]), "d/m/Y");
+                if (isset($col["created_at"]) && $col["created_at"] != '' && isset($col["api"]) && $col["api"] == 'twitter') {
+                    $arr[$a]["created_at"] = date_format(date_create($col["created_at"]), "d/m/Y");
+                } else if (isset($col["created_at"]) && $col["created_at"] != '' && isset($col["api"]) && $col["api"] == 'instagram') {
+                    $arr[$a]["created_at"] = gmdate("d/m/Y", $col["created_at"]);
+                } else if (isset($col["created_time"]) && $col["created_time"] != '' && isset($col["api"]) && $col["api"] == 'instagram') {
+                    $arr[$a]["created_at"] = gmdate("d/m/Y", $col["created_time"]);
                 } else {
-                    $arr[$a]["created_at"] = "";
+                    $arr[$a]["created_at"] = "No disponible";
                 }
                 if (isset($col["id_usuario"])) {
                     $arr[$a]["id_usuario"] = $col["id_usuario"];
@@ -531,10 +540,10 @@ class DB_Function
 
     }
 
-    public function getCountPost($word,$idate, $fdate,$typedate)
+    public function getCountPost($word, $idate, $fdate, $typedate)
     {
 
-
+        $bool2 = false;
         $m = new MongoClient();
 
         $db = $m->selectDB("ssma");
@@ -564,12 +573,12 @@ class DB_Function
         $arr1 = array();
         //SELECT COUNT(*y) FROM users where AGE > 30	$db->users->find(array("age" => array('$gt' => 30)))->count();
         //array("age" => array('$exists' => true))
-        if($word!=''){
-            $query1 = array('api' => 'twitter',"text_clean" =>$word);
-            $query2 = array('api' => 'instagram',"text_clean" =>$word);
-            $query3 = array('api' => 'reddit',"text_clean" =>$word);
-            $query4 = array('api' => 'tumblr',"text_clean" =>$word);
-        }else{
+        if ($word != '') {
+            $query1 = array('api' => 'twitter', "text_clean" => $word);
+            $query2 = array('api' => 'instagram', "text_clean" => $word);
+            $query3 = array('api' => 'reddit', "text_clean" => $word);
+            $query4 = array('api' => 'tumblr', "text_clean" => $word);
+        } else {
             $query1 = array('api' => 'twitter');
             $query2 = array('api' => 'instagram');
             $query3 = array('api' => 'reddit');
@@ -586,6 +595,12 @@ class DB_Function
             $reddit = $collection->find($query3)->count();
             $tumblr = $collection->find($query4)->count();
 
+            if (!$bool2 && $twitter == 0 && $instagram == 0 && $reddit == 0 && $tumblr == 0) {
+                $bool = false;
+            } else {
+                $bool = true;
+                $bool2 = true;
+            }
             $arr1[$a]["twitter"] = $twitter;
             $arr1[$a]["instagram"] = $instagram;
             $arr1[$a]["reddit"] = $reddit;
@@ -599,9 +614,12 @@ class DB_Function
             //echo $inidateStr.' == '.$findate.'<br>';
             $a++;
         }
-
         $m->close();
-        return $arr1;
+        if ($bool) {
+            return $arr1;
+        } else {
+            return 0;
+        }
 
 
     }
@@ -790,22 +808,29 @@ class DB_Function
         $kloutKey[1] = 'bjp5e6qzeq7ay9yzydh2uq2d'; //darstecmty@gmail.com RedesSociales1
         $kloutKey[2] = 'fwfzgh4g55mcrytauvew9pmv'; //e.acosta@itesm.mx
         $kloutKey[3] = 'yhs6qgsuspjxr2v8muy5nfpz'; //darsmtytec1@gmail.com
+        $kloutKey[4] = ''; //Salir del wile
+
 
         $i = 0;
         $bol = false;
         sleep(2);
         while (!$bol) {
-            $jsonK = file_get_contents("http://api.klout.com/v2/identity.json/tw/" . $user . "?key=" . $kloutKey[$i]);
+            $context = stream_context_create(array('http' => array('header' => 'Connection: close\r\n')));
+            $jsonK = file_get_contents("http://api.klout.com/v2/identity.json/tw/" . $user . "?key=" . $kloutKey[$i], false, $context);
             //var_dump($http_response_header);
 
             if ($jsonK == false) {
                 $i++;
+                if ($i = count($kloutKey)) {
+                    return 0;
+                }
             } else {
                 $bol = true;
             }
 
             //echo "http://api.klout.com/v2/identity.json/tw/" . $user . "?key=" . $kloutKey[$i];
         }
+
         $kloutID = json_decode($jsonK, true);
         //var_dump($kloutID['id']);
 
@@ -815,6 +840,70 @@ class DB_Function
         $scoreKlout = intval($kloutUser);
 
         return $scoreKlout;
+
+    }
+
+
+    public function klout2($user, $index)
+    {
+
+        //<editor-fold desc="LLave de la API">
+        $kloutKey[0] = 'hjsske2mer3th85ub6e5bw82';
+        $kloutKey[1] = 'bjp5e6qzeq7ay9yzydh2uq2d'; //darstecmty@gmail.com RedesSociales1
+        $kloutKey[2] = 'fwfzgh4g55mcrytauvew9pmv'; //e.acosta@itesm.mx
+        $kloutKey[3] = 'yhs6qgsuspjxr2v8muy5nfpz'; //darsmtytec1@gmail.com
+
+        if ($index > count($kloutKey)) {
+            $index = 0;
+        }
+        //</editor-fold>
+        $scoreKlout = 0;
+
+        //<editor-fold desc="ID usuario Klout">
+        $ch = curl_init();
+        $url = "http://api.klout.com/v2/identity.json/tw/" . $user . "?key=" . $kloutKey[$index];
+
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); //Set curl to return the data instead of printing it to the browser.
+        curl_setopt($ch, CURLOPT_URL, $url);
+
+        $kloutID = curl_exec($ch);
+
+        //Error en la consulta, cierra conexion
+        if (curl_error($ch)) {
+            curl_close($ch);
+            return 0;
+        }
+        curl_close($ch);
+        $kloutID = json_decode($kloutID, true);
+        //</editor-fold>
+
+        //<editor-fold desc="Obtener score del usuario">
+        $ch = curl_init();
+        $url = "http://api.klout.com/v2/user.json/" . $kloutID['id'] . "?key=" . $kloutKey[$index];
+
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); //Set curl to return the data instead of printing it to the browser.
+        curl_setopt($ch, CURLOPT_URL, $url);
+
+        $Klout = curl_exec($ch);
+        //Error en la consulta, cierra conexion
+        if (curl_error($ch)) {
+            curl_close($ch);
+            return 0;
+        }
+        curl_close($ch);
+        $userKlout = json_decode($Klout, true);
+
+
+        if (isset($userKlout['score']['score'])) {
+            $scoreKlout = $userKlout['score']['score'];
+            $scoreKlout = intval($scoreKlout);
+            return $scoreKlout;
+        } else {
+            return 0;
+        }
+        //</editor-fold>
 
     }
     //</editor-fold>

@@ -7,6 +7,7 @@
  */
 
 header("Access-Control-Allow-Origin: *");
+//<editor-fold desc="Conexiones">
 date_default_timezone_set("America/Monterrey");
 require_once("twitteroauth.php");
 require_once '/opt/lampp/htdocs/ssma/web_service/include/DB_Function.php';
@@ -15,8 +16,9 @@ $dbf = new DB_Function();
 $m = new MongoClient();
 $db = $m->selectDB("ssma");
 $colName = date("dmy");
-$colName = 'col'. $colName;
+$colName = 'col' . $colName;
 $collection = $db->selectCollection($colName);
+//</editor-fold>
 
 //<editor-fold desc="Remove accents">
 /**
@@ -40,7 +42,6 @@ function remove_emoji($text)
 
 //</editor-fold>
 
-
 //<editor-fold desc="Variables">
 $b = 0;
 $word[] = '';
@@ -51,8 +52,9 @@ $topics[] = '';
 $accounts[] = '';
 $post[] = '';
 $bol = true;
+$index = 0;
 $showSentiment = 'true';
-$notweets = 100; //cantidad de tweets a mostrar
+$notweets = 3;//cantidad de tweets a mostrar
 $sentiment = 'NONE';
 $mod = '';
 
@@ -64,10 +66,11 @@ if (isset($_POST["user"][0]) && $_POST["user"][0] != '') {
 }
 if (isset($_POST["topic"][0]) && $_POST["topic"][0] != '') {
     $topico = $_POST["topic"];
-}
-else {
+    echo $topico;
+} else {
+    $notweets = 100;
+    //$topico[0] = 'tec de monterrey';
 
-   //$topico[0] = 'tec de monterrey';
     require_once '/opt/lampp/htdocs/ssma/web_service/include/DB_Function.php';
     $db = new DB_Function();
 
@@ -123,7 +126,6 @@ if (isset($_POST["sentiment"]) && $_POST["sentiment"] != '') {
 }
 //</editor-fold>
 
-
 //<editor-fold desc="Klout">
 // ************* Klout API ***************************
 $kloutKey = 'hjsske2mer3th85ub6e5bw82';
@@ -134,7 +136,6 @@ if ($showSentiment == 'true') {
     $showSentiment = false;
 }
 //</editor-fold>
-
 
 //<editor-fold desc="Conexion API Twitter">
 $consumerkey = "0O4NDYS28rd96Uh6uGENXvp5y";
@@ -151,7 +152,6 @@ function getConnectionWithAccessToken($cons_key, $cons_secret, $oauth_token, $oa
 $connection = getConnectionWithAccessToken($consumerkey, $consumersecret, $accesstoken, $accesstokensecret);
 //var_dump( $connection);
 //</editor-fold>
-
 
 //<editor-fold desc="Por cuenta">
 if ($user[0] != '') {
@@ -182,10 +182,11 @@ $txt = '';
 
 //</editor-fold>
 
-//$topics[0] = $topico[0];
+
 $accounts[0] = $user[0];
 $c = 0;
 
+//<editor-fold desc="Obtener informacion de twitter">
 if ($topico[0] != '') {
 
     for ($b = 0; $b < count($topico); $b++) {
@@ -202,90 +203,89 @@ if ($topico[0] != '') {
                     $rtImg = true;//Si es un re twitt sirve para calcular el del usuario que lo re twittero
                 }
                 if ($count <= 10) {
-                   //$scoreKlout = $dbf->klout( $phpArraySearch['statuses'][$a]['user']['id']);
-                }
-                else {
-                    //sleep(1.5);// esperar unos segundos y volver a realizar las peticiones
+                    $scoreKlout = $dbf->klout2($phpArraySearch['statuses'][$a]['user']['id'], $index);
+                } else {
+                    sleep(.5);// esperar unos segundos y volver a realizar las peticiones
                     //$count = 0;
-                    //$scoreKlout = $dbf->klout( $phpArraySearch['statuses'][$a]['user']['id']);
+                    $scoreKlout = $dbf->klout2($phpArraySearch['statuses'][$a]['user']['id'], $index);
+                }
+                $index++;
+                if ($index > 3) {
+                    $index = 0;
                 }
                 $count++;
                 if ($showSentiment) {
-                   $txt = $phpArraySearch['statuses'][$a]['text'];
-                   $sentiment = $dbf->sentimentAnalysis($txt);
+                    $txt = $phpArraySearch['statuses'][$a]['text'];
+                    $sentiment = $dbf->sentimentAnalysis($txt);
 
                 }
-            //<editor-fold desc="Clean text">
-            $strText = '';
-            if ($phpArraySearch['statuses'][$a]['text'] != null && $phpArraySearch['statuses'][$a]['text'] != '') {
-                $strText = removeAccents($phpArraySearch['statuses'][$a]['text']);//preg_replace('/\/[^@:.A-Za-z0-9\-]/', ' ', $phpArraySearch['statuses'][$a]['text']);;
-                $strText = remove_emoji($strText);
-            }
-            //</editor-fold>
-            //Si es un RT se calcula el KLOUT de la persona que realizo el RT
-            if ($rtImg) {
-                //sleep(2);
-                //$scoreKlout = $dbf->klout( $phpArraySearch['statuses'][$a]['user']['id'] );
-            }
+                //<editor-fold desc="Clean text">
+                $strText = '';
+                if ($phpArraySearch['statuses'][$a]['text'] != null && $phpArraySearch['statuses'][$a]['text'] != '') {
+                    $strText = removeAccents($phpArraySearch['statuses'][$a]['text']);//preg_replace('/\/[^@:.A-Za-z0-9\-]/', ' ', $phpArraySearch['statuses'][$a]['text']);;
+                    $strText = remove_emoji($strText);
+                }
+                //</editor-fold>
+                //Si es un RT se calcula el KLOUT de la persona que realizo el RT
+                if ($rtImg) {
+                    sleep(1);
+                    $scoreKlout = $dbf->klout2($phpArraySearch['statuses'][$a]['user']['id'], $index);
+                }
 
-            //<editor-fold desc="Arreglo con parametros">
-            $arraySearch[$c]["id_post"] = $phpArraySearch['statuses'][$a]['id_str'];
-            $arraySearch[$c]["cant_retweet"] = utf8_encode($phpArraySearch['statuses'][$a]['retweet_count']);
-            //$arraySearch[$c]["text_tweet"] = utf8_encode($phpArraySearch['statuses'][$a]['text']);
-            $arraySearch[$c]["text_clean"] = utf8_encode($strText);
-            $arraySearch[$c]["id_usuario"] = $phpArraySearch['statuses'][$a]['user']['id'];
-            $arraySearch[$c]["nombre_usuario"] = utf8_encode($phpArraySearch['statuses'][$a]['user']['name']);
-            $arraySearch[$c]["screen_name"] = utf8_encode($phpArraySearch['statuses'][$a]['user']['screen_name']);
-            $arraySearch[$c]["user_description"] = utf8_encode($phpArraySearch['statuses'][$a]['user']['description']);
-            $arraySearch[$c]["foto_perfil"] = $phpArraySearch['statuses'][$a]['user']['profile_image_url'];
-            $arraySearch[$c]["cuentas_que_sigue"] = utf8_encode($phpArraySearch['statuses'][$a]['user']['friends_count']);
-            $arraySearch[$c]["cuentas_que_lo_siguen"] = utf8_encode($phpArraySearch['statuses'][$a]['user']['followers_count']);
-            $arraySearch[$c]["created_at"] = $phpArraySearch['statuses'][$a]['created_at'];
-            $arraySearch[$c]["in_reply_to_status_id"] = utf8_encode($phpArraySearch['statuses'][$a]['in_reply_to_status_id']);
-            $arraySearch[$c]["in_reply_to_screen_name"] = utf8_encode($phpArraySearch['statuses'][$a]['in_reply_to_screen_name']);
-            $arraySearch[$c]["in_reply_to_user_id_str"] = utf8_encode($phpArraySearch['statuses'][$a]['in_reply_to_user_id_str']);
-            $arraySearch[$c]["location"] = utf8_encode($phpArraySearch['statuses'][$a]['user']['location']);
-            if ($phpArraySearch['statuses'][$a]['user']['protected']) {
-                $arraySearch[$c]["protected"] = "true";
-            } else {
-                $arraySearch[$c]["protected"] = "false";
+                //<editor-fold desc="Arreglo con parametros">
+                $arraySearch[$c]["id_post"] = $phpArraySearch['statuses'][$a]['id_str'];
+                $arraySearch[$c]["cant_retweet"] = utf8_encode($phpArraySearch['statuses'][$a]['retweet_count']);
+                //$arraySearch[$c]["text_tweet"] = utf8_encode($phpArraySearch['statuses'][$a]['text']);
+                $arraySearch[$c]["text_clean"] = utf8_encode($strText);
+                $arraySearch[$c]["id_usuario"] = $phpArraySearch['statuses'][$a]['user']['id'];
+                $arraySearch[$c]["nombre_usuario"] = utf8_encode($phpArraySearch['statuses'][$a]['user']['name']);
+                $arraySearch[$c]["screen_name"] = utf8_encode($phpArraySearch['statuses'][$a]['user']['screen_name']);
+                $arraySearch[$c]["user_description"] = utf8_encode($phpArraySearch['statuses'][$a]['user']['description']);
+                $arraySearch[$c]["foto_perfil"] = $phpArraySearch['statuses'][$a]['user']['profile_image_url'];
+                $arraySearch[$c]["cuentas_que_sigue"] = utf8_encode($phpArraySearch['statuses'][$a]['user']['friends_count']);
+                $arraySearch[$c]["cuentas_que_lo_siguen"] = utf8_encode($phpArraySearch['statuses'][$a]['user']['followers_count']);
+                $arraySearch[$c]["created_at"] = $phpArraySearch['statuses'][$a]['created_at'];
+                $arraySearch[$c]["in_reply_to_status_id"] = utf8_encode($phpArraySearch['statuses'][$a]['in_reply_to_status_id']);
+                $arraySearch[$c]["in_reply_to_screen_name"] = utf8_encode($phpArraySearch['statuses'][$a]['in_reply_to_screen_name']);
+                $arraySearch[$c]["in_reply_to_user_id_str"] = utf8_encode($phpArraySearch['statuses'][$a]['in_reply_to_user_id_str']);
+                $arraySearch[$c]["location"] = utf8_encode($phpArraySearch['statuses'][$a]['user']['location']);
+                if ($phpArraySearch['statuses'][$a]['user']['protected']) {
+                    $arraySearch[$c]["protected"] = "true";
+                } else {
+                    $arraySearch[$c]["protected"] = "false";
 
-            }
-            $arraySearch[$c]["friends_count"] = utf8_encode($phpArraySearch['statuses'][$a]['user']['friends_count']);
-            if ($phpArraySearch['statuses'][$a]['user']['verified']) {
-                $arraySearch[$c]["verified"] = "true";
-            } else {
-                $arraySearch[$c]["verified"] = "false";
+                }
+                $arraySearch[$c]["friends_count"] = utf8_encode($phpArraySearch['statuses'][$a]['user']['friends_count']);
+                if ($phpArraySearch['statuses'][$a]['user']['verified']) {
+                    $arraySearch[$c]["verified"] = "true";
+                } else {
+                    $arraySearch[$c]["verified"] = "false";
 
-            }
-            $arraySearch[$c]["api"] = 'twitter';
-            $arraySearch[$c]["Klout"] = 0;//$scoreKlout;
-            $arraySearch[$c]["model"] = $mod;
-            $arraySearch[$c]["sentiment"] = $sentiment;
-            //</editor-fold>
-            //$collection->insert($arraySearch[$c]);
+                }
+                $arraySearch[$c]["api"] = 'twitter';
+                $arraySearch[$c]["Klout"] = $scoreKlout;
+                $arraySearch[$c]["model"] = $mod;
+                $arraySearch[$c]["sentiment"] = $sentiment;
+                //</editor-fold>
+                //$collection->insert($arraySearch[$c]);
+                try {
 
-            try {
-                if ($phpArraySearch['statuses'][$a]['id_str'] != null) {
-                    //$collection->update($arraySearch[$c], array("upsert" => true));
                     $collection->insert($arraySearch[$c]);
                     $collection->ensureIndex(array('id_post' => 1), array('unique' => 1, 'dropDups' => 1));
+
+
+                } catch (MongoWriteConcernException $e) {
+                    //echo $e->getMessage(), "\n";
                 }
 
-            } catch (MongoWriteConcernException $e) {
-                //echo $e->getMessage(), "\n";
+                $c++;
+                // $b++;
             }
-            //array_push($post, $arraySearch);
-            $c++;
-            // $b++;
         }
     }
-}
 
-
-echo json_encode($arraySearch);
-}
-else if ($accounts[0] != '') {
+    echo json_encode($arraySearch);
+} else if ($accounts[0] != '') {
 
     for ($c = 0; $c < count($accounts); $c++) {
         $tweetsAccount = $connection->get("https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=" . $accounts[$c] . "&count=" . $notweets);
@@ -458,5 +458,6 @@ else if ($accounts[0] != '') {
     $response['msg'] = "No se tienen topicos ni # para buscar";
     json_encode($response);
 }
+//</editor-fold>
 
 $m->close();

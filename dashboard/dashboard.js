@@ -4,32 +4,9 @@
 
 
 function charts() {
-//indice Klout
-    $.post("/ssma/web_service/chart.php", function (data) {
-    }, "json").done(function (data) {
-
-
-        if (data.success == 1) {
-            $('.lod1').hide('200');
-            Morris.Bar({
-                element: 'klout',
-                data: data["chart"],//la "y" es eje x y la "a" es el ejey
-                xkey: 'y',
-                ykeys: ['a'],
-                labels: ['Klout',]
-            });
-        }
-
-
-    }).fail(function (data) {
-        console.log("Error de conexion");
-        console.log(data);
-
-    });
-
 
 //indice Klout
-    $.post("/ssma/web_service/chart.php", function (data) {
+    $.post("/ssma/web_service/countKlout.php", function (data) {
     }, "json").done(function (data) 
     {
 
@@ -39,57 +16,15 @@ function charts() {
             $('.lod4').hide();
             $('#kloutBar').show();
 
-            var chart = AmCharts.makeChart("chartdiv1", {
+            var chart = AmCharts.makeChart("countKlout", {
                 "theme": "light",
                 "type": "serial",
-                "dataProvider": data["chart"] /*[{
-                 "country": "USA",
-                 "year2004": 3.5,
-                 "year2005": 4.2
-                 },
-                 {
-                 "country": "UK",
-                 "year2004": 1.7,
-                 "year2005": 3.1
-                 },
-                 {
-                 "country": "Canada",
-                 "year2004": 2.8,
-                 "year2005": 2.9
-                 },
-                 {
-                 "country": "Japan",
-                 "year2004": 2.6,
-                 "year2005": 2.3
-                 }, {
-                 "country": "France",
-                 "year2004": 1.4,
-                 "year2005": 2.1
-                 },
-                 {
-                 "country": "Brazil",
-                 "year2004": 2.6,
-                 "year2005": 4.9
-                 }, {
-                 "country": "Russia",
-                 "year2004": 6.4,
-                 "year2005": 7.2
-                 },
-                 {
-                 "country": "India",
-                 "year2004": 8,
-                 "year2005": 7.1
-                 },
-                 {
-                 "country": "China",
-                 "year2004": 9.9,
-                 "year2005": 10.1
-                 }]*/,
+                "dataProvider": data["chart"],
                 "valueAxes": [{
                     "stackType": "3d",
                     "unit": "%",
                     "position": "left",
-                    "title": "Sentimiento",
+                    "title": "Klout",
                 }],
                 "startDuration": 1,
                 "graphs": [{
@@ -137,46 +72,25 @@ function charts() {
         }
 
     }).fail(function (data) {
+        $('.lod4').hide();
         console.log("Error de conexion");
         console.log(data);
 
     });
-/*
-//sentimiento
-    $.post("/ssma/web_service/sentiment.php", function (data) {
-    }, "json").done(function (data) {
-
-        //console.debug(data);
-        //console.debug(data['sentiment'].length);
-
-        if (data.success == 1) {
-            $('.lod2').hide();
-            $('#sentimento').show();
-            Morris.Donut({
-                element: 'donutSentiment',
-                data: data['sentiment']
-            });
-        }
-
-
-    }).fail(function (data) {
-        console.log("Error de conexion");
-        console.log(data);
-
-    });
-*/
 
 //Sentimiento
     $.post("/ssma/web_service/sentiment.php", function (data) {
     }, "json").done(function (data) 
     {
 
-        // console.log( data['sentiment']);
+        console.log( data['sentiment']);
 
         if (data.success == 1) {
             $('#h1').hide();
             $('.lod2').hide();
             $('#sentimento').show();
+            $('#donutSentiment').show();
+
             //console.log(data.sentiment);
 
             var chart = AmCharts.makeChart("donutSentiment", {
@@ -196,15 +110,17 @@ function charts() {
             });
         }
         else if(data.success == 0){
+            $('#h1').show();
             $('.lod2').hide();
             $('#sentimento').hide();
-            $('#h1').show();
+
 
         }
 
 
     }).fail(function (data)
     {
+       
         console.log("Error de conexion");
         console.log(data);
 
@@ -251,13 +167,13 @@ function charts() {
                     "title": "Twitter",
                     "valueField": "twitter"
                 },{
-                    "balloonText": "<i class='fa fa-twitter-square fa-6'style='vertical-align:bottom; margin-right: 10px; width:28px; height:21px;'><span style='font-size:14px; color:#000000;'></i><b>[[value]]</b></span>",
+                    "balloonText": "<i class='fa fa-tumblr fa-6'style='vertical-align:bottom; margin-right: 10px; width:28px; height:21px;'><span style='font-size:14px; color:#000000;'></i><b>[[value]]</b></span>",
                     "fillAlphas": 0.6,
                     "lineAlpha": 0.4,
                     "title": "Tumblr",
                     "valueField": "tumblr"
                 },{
-                    "balloonText": "<i class='fa fa-twitter-square fa-6'style='vertical-align:bottom; margin-right: 10px; width:28px; height:21px;'><span style='font-size:14px; color:#000000;'></i><b>[[value]]</b></span>",
+                    "balloonText": "<i class='fa fa-reddit fa-6'style='vertical-align:bottom; margin-right: 10px; width:28px; height:21px;'><span style='font-size:14px; color:#000000;'></i><b>[[value]]</b></span>",
                     "fillAlphas": 0.6,
                     "lineAlpha": 0.4,
                     "title": "Reddit",
@@ -303,10 +219,14 @@ function charts() {
                     "enabled": true
                 }
             });
+
+
         }
 
 
-    }).fail(function (data) {
+    }).fail(function (data)
+    {
+
         console.log("Error de conexion");
         console.log(data);
 
@@ -370,8 +290,8 @@ function autoReloadChart() {
     }
 
     AmCharts.ready(function () {
-        console.log("entro1");
-        generateChartData();
+        //console.log("entro1");
+        //generateChartData();
 
     });
 
@@ -612,14 +532,23 @@ function autoReloadChart() {
 
 
 $(document).ready(function () {
-    autoReloadChart();
+    //autoReloadChart();
     charts();
 
 
-    $('.page-title').html('<h1>Dashboard</h1>');
-    $('#page-breadcrumb').remove();
-    $('#menu-dashboard').addClass('active');
 
+    $('.page-title').html('<h1>Dashboard</h1>');
+    $('#menu-dashboard').addClass('active');
+    $("#breadMenu").append('<li><a href="dashboard/campus.php" target="_blank">Campus</a></li>').append(' <i class="fa fa-circle"></i> ');
+    $("#breadMenu").append('<li><a href="dashboard/competidores.php" target="_blank">Competidores</a></li>');
+    $('#page-breadcrumb').remove();
+
+    $("#footerBar").css('background','#eff3f8');
+    $("#footerText").css('color','#34495e');
+    $("#containerFluid").css('padding-left','1.5%');
+    $("#containerFluid").css('padding-right','1.5%');
+    $("#breadMenu").css('padding-left','30px');
+    $("#scrollImg").css('display','none');
 
     $("#searchSentiment").click(function () {
 
@@ -628,7 +557,7 @@ $(document).ready(function () {
             $.post("/ssma/web_service/sentiment.php", {'word': palabra}, function (data)
             {}, "json").done(function (data)
             {
-               // console.log(data);
+                console.log(data);
                 if (data.success == 1) {
                     $('#h1').hide();
 
@@ -669,7 +598,7 @@ $(document).ready(function () {
             });
 
             //Total de post
-            $.post("/ssma/web_service/countPosts.php", function (data) {
+            $.post("/ssma/web_service/countPosts.php",{'word': palabra},  function (data) {
             }, "json").done(function (data)
             {
 
@@ -678,7 +607,8 @@ $(document).ready(function () {
                 if (data.success == 1) {
                     $('.lod5').hide();
                     $('#datepost').show();
-                    ('#post1').empty();
+                    $('#datepost').empty();
+                   
                     var chart = AmCharts.makeChart("datepost", {
                         "type": "serial",
                         "theme": "light",
@@ -763,6 +693,12 @@ $(document).ready(function () {
                             "enabled": true
                         }
                     });
+                }
+                else if(data.success == 0){
+                    $('.lod5').hide();
+                    $('#datepost').hide();
+                    $('#h2').show();
+
                 }
 
 

@@ -7,7 +7,6 @@
     <script src="https://www.google.com/jsapi"
             type="text/javascript"></script>
     <script language="Javascript" type="text/javascript">
-        //<!
         google.load('search', '1');
 
         function OnLoad() {
@@ -16,14 +15,16 @@
 
             // Add in a full set of searchers
             var localSearch = new google.search.LocalSearch();
-            searchControl.addSearcher(localSearch);
+
             searchControl.addSearcher(new google.search.WebSearch());
-            searchControl.addSearcher(new google.search.VideoSearch());
+            console.log(google.search.WebSearch());
+            /*searchControl.addSearcher(new google.search.VideoSearch());
+             searchControl.addSearcher(localSearch);
             searchControl.addSearcher(new google.search.BlogSearch());
             searchControl.addSearcher(new google.search.NewsSearch());
             searchControl.addSearcher(new google.search.ImageSearch());
             searchControl.addSearcher(new google.search.BookSearch());
-            searchControl.addSearcher(new google.search.PatentSearch());
+            searchControl.addSearcher(new google.search.PatentSearch());*/
 
             // Set the Local Search center point
             localSearch.setCenterPoint("Monterrey, MX");

@@ -119,7 +119,7 @@ function sendPost($api, $key, $model, $txt)
 $showSentiment = false;
 
 for ($i = 0; $i < count($query); $i) {
-    $url = "http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=" . $query[$i] . "&key=AIzaSyBH7CCYp-F3REO_nVKPHeLHzW1sSnp6nGY&userip=USERS-IP-ADDRESS&rsz=large";//&start=".$cont;
+    $url = "http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=" . $query[$i] . "&key=AIzaSyBH7CCYp-F3REO_nVKPHeLHzW1sSnp6nGY&rsz=large";//&start=".$cont;
     $body = file_get_contents($url);
     $json = json_decode($body);
 

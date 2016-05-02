@@ -5,15 +5,14 @@
  * Date: 30/03/2016
  * Time: 09:58 AM
  */
+ini_set('memory_limit', '512M');
 
 require_once $_SERVER['DOCUMENT_ROOT'] . '/ssma/web_service/include/DB_Function.php';
 $dbf = new DB_Function();
-$chart = $dbf->getData('tec', 'twitter', '', '');
+$chart = $dbf->getData('tec', '', '', '');
 
 
 $response = array("success" => 1, "error" => 0);
-
-
 //echo json_encode($chart);
 //echo count($chart);
 $c=0;

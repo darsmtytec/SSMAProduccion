@@ -5,16 +5,17 @@
  * Date: 06/04/2016
  * Time: 02:09 PM
  */
+ini_set('memory_limit', '512M');
 
 require_once $_SERVER['DOCUMENT_ROOT'].'/ssma/web_service/include/DB_Function.php';
 $dbf = new DB_Function();
 
 if (isset($_POST['word']) && $_POST['word'] != '') {
     $search = $_POST['word'];
-    $chart = $dbf->getData($search,'twitter','','');
+    $chart = $dbf->getData($search,'','','');
 }
 else{
-    $chart = $dbf->getData('tec','twitter','','');
+    $chart = $dbf->getData('tec','','','');
 
 }
 //var_dump($chart);

@@ -56,7 +56,7 @@ else if ($type == "get") {
     $word = $db->getWords();
 }
 else if ($type == "update") {
-    $word = $db->updateWords($id, $word, $active, $created_date, $created_by);
+    $word = $db->updateWords($id, $words, $active, $created_date, $created_by);
 }
 else {
     $word = false;

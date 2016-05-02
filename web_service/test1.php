@@ -1,66 +1,95 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+<?php
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/jquery.jqplot.min.js" type="text/javascript"></script>
-    <link src="https://cdnjs.cloudflare.com/ajax/libs/jqPlot/1.0.8/jquery.jqplot.min.css"  rel="stylesheet" type="text/css" >
-</head>
-<script>
-    /* store empty array or array of original data to plot on page load */
+$word = "tecdemonterrey";
+// The request also includes the userip parameter which provides the end
+// user's IP address. Doing so will help distinguish this legitimate
+// server-side traffic from traffic which doesn't come from an end-user.
+$url = "https://ajax.googleapis.com/ajax/services/search/web?v=1.0&"."q=Paris%20Hilton&userip=USERS-IP-ADDRESS";
 
-    var storedData = [3, 7];
+// sendRequest
+// note how referer is set manually
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $url);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+curl_setopt($ch, CURLOPT_REFERER, "10.2.27.52/ssma/web_service/test1.php");
+$body = curl_exec($ch);
+curl_close($ch);
 
-    /* initialize plot*/
+// now, process the JSON string
+$json = json_decode($body);
+// now have some fun with the results...
 
-    var plot1;
-    renderGraph();
+/*
+    echo "<br />Your Search Results Google:<br /><br />";
 
-    $('button').click( function(){
-        doUpdate();
-        $(this).hide();
-    });
 
-    function renderGraph() {
-        if (plot1) {
-            plot1.destroy();
-        }
-        plot1 = $.jqplot('chart1', [storedData]);
+    $i = 0;
+
+
+    $url = "http://ajax.googleapis.com/ajax/services/search/web?v=1.0&num=10&start=" . $i . "&" . "q=" . str_replace(' ', '%20', $word);
+
+// sendRequest
+// note how referer is set manually
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_REFERER, 'http://www.google.com');
+    $body = curl_exec($ch);
+    curl_close($ch);
+
+
+// now, process the JSON string
+
+
+    $json = json_decode($body, true);
+
+*/
+/*
+ <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title>Hello World - Google  Web Search API Sample</title>
+    <script src="https://www.google.com/jsapi"
+        type="text/javascript"></script>
+    <script language="Javascript" type="text/javascript">
+    //<!
+    google.load('search', '1');
+
+    function OnLoad() {
+      // Create a search control
+      var searchControl = new google.search.SearchControl();
+
+      // Add in a full set of searchers
+      var localSearch = new google.search.LocalSearch();
+      searchControl.addSearcher(localSearch);
+      searchControl.addSearcher(new google.search.WebSearch());
+      searchControl.addSearcher(new google.search.VideoSearch());
+      searchControl.addSearcher(new google.search.BlogSearch());
+      searchControl.addSearcher(new google.search.NewsSearch());
+      searchControl.addSearcher(new google.search.ImageSearch());
+      searchControl.addSearcher(new google.search.BookSearch());
+      searchControl.addSearcher(new google.search.PatentSearch());
+
+      // Set the Local Search center point
+      localSearch.setCenterPoint("New York, NY");
+
+      // tell the searcher to draw itself and tell it where to attach
+      searchControl.draw(document.getElementById("searchcontrol"));
+
+      // execute an inital search
+      searchControl.execute("VW GTI");
     }
+    google.setOnLoadCallback(OnLoad);
 
-    var newData = [9, 1, 4, 6, 8, 2, 5];
-
-
-    function doUpdate() {
-        if (newData.length) {
-            var val = newData.shift();
-            $.post('/echo/html/', {
-                html: val
-            }, function(response) {
-                var newVal = new Number(response); /* update storedData array*/
-                storedData.push(newVal);
-                renderGraph();
-                log('New Value '+ newVal+' added')
-                setTimeout(doUpdate, 3000)
-            })
-
-        } else {
-            log("All Done")
-        }
-    }
-
-    function log(msg) {
-        $('body').append('<div>'+msg+'</div>')
-    }
-</script>
-<body>
-
-
-
-
-<div id="chart1" style="height: 300px; width: 500px; position: relative;"></div>
-<button>Start Updates</button>
-
-
-</body>
+    //]]>
+    </script>
+  </head>
+  <body>
+    <div id="searchcontrol">Loading</div>
+  </body>
 </html>
+ *
+ *
+ */

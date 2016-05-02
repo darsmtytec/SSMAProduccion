@@ -53,13 +53,13 @@ else{
 
     $word = $dbf->getWords();
     $a = 0;
-    foreach($word as $palabra){
-        $topicsTumblr[$a]=$palabra["word"];
+    foreach($word as $palabra) {
+        $topicsTumblr[$a] = $palabra["word"];
         //echo $topicsTumblr[$a];
         $a++;
     }
-    $showSentiment = true;
 }
+$showSentiment = true;
 //</editor-fold>
 //<editor-fold desc="Sentiment API">
 //https://www.meaningcloud.com/developer/apis
